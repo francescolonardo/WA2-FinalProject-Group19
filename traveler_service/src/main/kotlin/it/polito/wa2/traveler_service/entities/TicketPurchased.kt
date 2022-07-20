@@ -12,6 +12,4 @@ class TicketPurchased {
     var exp: Timestamp? = null
     var zid: String = ""
     var jws: String = ""
-    @ManyToOne
-    var userDetails: UserDetails? = null
 }
