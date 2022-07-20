@@ -50,6 +50,7 @@ class WebSecurityConfig: WebSecurityConfigurerAdapter() {
             .antMatchers(HttpMethod.POST,"/user/validate").permitAll()
             .antMatchers(HttpMethod.GET,"/user/validate/**").permitAll()
             .antMatchers(HttpMethod.POST,"/user/login").permitAll()
+            .antMatchers(HttpMethod.POST,"/turnstile/token").permitAll()
             .antMatchers(HttpMethod.POST,"/turnstile/register").hasAuthority("ADMIN")
 
         http.authorizeRequests()

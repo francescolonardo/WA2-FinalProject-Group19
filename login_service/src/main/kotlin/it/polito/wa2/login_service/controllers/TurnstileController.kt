@@ -18,10 +18,22 @@ class TurnstileController {
     private lateinit var turnstileService: TurnstileService
 
     @PostMapping("/register")
-    fun registerTurnstile(@RequestBody turnstileDTO: TurnstileDTO) : ResponseEntity<TurnstileOutputDTO> {
+    fun registerTurnstile(@RequestBody turnstileDTO: TurnstileDTO): ResponseEntity<TurnstileOutputDTO> {
         return try {
             val turnstileOutputDTO = turnstileService.registerTurnstile(turnstileDTO.secret)
             ResponseEntity.status(HttpStatus.CREATED).body(turnstileOutputDTO)
+        }catch (ex: Exception){
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
+        }
+    }
+
+    @PostMapping("/token")
+    fun generateToken(@RequestBody turnstileDTO: TurnstileDTO): ResponseEntity<HashMap<String, String>> {
+        return try {
+            val token = turnstileService.generateToken(turnstileDTO)
+            val map = HashMap<String, String>()
+            map["token"] = token
+            ResponseEntity.status(HttpStatus.OK).body(map)
         }catch (ex: Exception){
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
         }
