@@ -52,7 +52,7 @@ class UserController {
             return ResponseEntity.status(HttpStatus.CREATED).body(userOutputDTO)
         } catch (ex: InvalidActivationException) {
             println(ex.localizedMessage)
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
         }
     }
 
