@@ -63,10 +63,10 @@ class UserController {
      * but in this case we have a get request with two parameters
      * (used for the activation link in the email received during registration)
      */
-    @GetMapping("/validate/provisional_id={provisionalId}&activation_code={activationCode}")
+    @GetMapping("/validate")
     fun userValidationGet(
-        @PathVariable("provisionalId") provisionalId: UUID,
-        @PathVariable("activationCode") activationCode: String
+        @RequestParam("provisional_id") provisionalId: UUID,
+        @RequestParam("activation_code") activationCode: String
     ): String {
         try {
             val userOutputDTO = userService.validateUser(provisionalId, activationCode)
