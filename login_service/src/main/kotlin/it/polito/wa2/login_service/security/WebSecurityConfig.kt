@@ -45,8 +45,8 @@ class WebSecurityConfig: WebSecurityConfigurerAdapter() {
             .antMatchers(HttpMethod.POST,"/user/register").permitAll()
             .antMatchers(HttpMethod.POST,"/user/validate").permitAll()
             .antMatchers(HttpMethod.GET,"/user/validate/**").permitAll()
+            .antMatchers(HttpMethod.POST,"/admin/enrolling").permitAll() // TODO: fix this
             .antMatchers(HttpMethod.POST,"/user/login").permitAll()
-
         http.authorizeRequests()
             .anyRequest().authenticated() // allows only authenticated users to be able to access the remaining paths
 

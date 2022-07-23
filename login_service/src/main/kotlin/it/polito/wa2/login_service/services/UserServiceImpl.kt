@@ -2,10 +2,9 @@ package it.polito.wa2.login_service.services
 
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
-import it.polito.wa2.login_service.dtos.ActivationOutputDTO
-import it.polito.wa2.login_service.dtos.AuthorizationTokenDTO
-import it.polito.wa2.login_service.dtos.UserOutputDTO
+import it.polito.wa2.login_service.dtos.*
 import it.polito.wa2.login_service.entities.Activation
+import it.polito.wa2.login_service.entities.Role
 import it.polito.wa2.login_service.entities.User
 import it.polito.wa2.login_service.exceptions.InvalidActivationException
 import it.polito.wa2.login_service.exceptions.InvalidUserException
@@ -14,8 +13,10 @@ import it.polito.wa2.login_service.repositories.ActivationRepository
 import it.polito.wa2.login_service.repositories.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Bean
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
+import java.security.DrbgParameters.Capability
 import java.security.Key
 import java.time.LocalDate
 import java.util.*
@@ -28,9 +29,8 @@ class UserServiceImpl : UserService {
     private lateinit var userRepository: UserRepository
     @Autowired
     private lateinit var activationRepository: ActivationRepository
-    @Autowired
-    private lateinit var passwordEncoder: BCryptPasswordEncoder
 
+    private val passwordEncoder = BCryptPasswordEncoder()
     private lateinit var errorExplanation: String
 
     @Value("\${jwt.authorization.signature-key-base64}")
@@ -73,18 +73,32 @@ class UserServiceImpl : UserService {
         return passwordCheck
     }
 
-    private fun checkUser(username: String, password: String, email: String) {
-        if (username.isNotEmpty() && password.isNotEmpty() && email.isNotEmpty()) {
+    private fun checkTravelerCredentials(username: String, password: String, email: String) {
+        if (username.isNotEmpty() && !username.contains(" ") && password.isNotEmpty() && email.isNotEmpty()) {
             if (checkEmailFormat(email) && checkPasswordStrength(password)) {
                 if (userRepository.getUserByUsernameOrEmail(username, email) == null) {
                     return
                 }
-                errorExplanation = "user already exists"
+                errorExplanation = "username or email already used"
             }
         }
         else
             errorExplanation = "fields cannot be empty"
-        throw InvalidUserException("User not valid: $errorExplanation")
+        throw InvalidUserException("Traveler not valid: $errorExplanation")
+    }
+
+    private fun checkAdminCredentials(username: String, password: String) {
+        if (username.isNotEmpty() && !username.contains(" ") && password.isNotEmpty()) {
+            if (checkPasswordStrength(password)) {
+                if (userRepository.getUserByUsername(username) == null) {
+                    return
+                }
+                errorExplanation = "username already used"
+            }
+        }
+        else
+            errorExplanation = "fields cannot be empty"
+        throw InvalidUserException("Admin not valid: $errorExplanation")
     }
 
     private fun getRandomActivationCode(length: Int = 6): String {
@@ -102,29 +116,26 @@ class UserServiceImpl : UserService {
      * the new activation's provisional id and the new user's email,
      * otherwise it throws an InvalidUserException
      */
-    override fun registerUser(username: String, password: String, email: String): ActivationOutputDTO {
-        checkUser(username, password, email)
-        val newUser = userRepository.save(
-            User(
-                0L,
-                username,
-                passwordEncoder.encode(password),
-                email
-            )
+    override fun registerTraveler(username: String, password: String, email: String): ActivationOutputDTO {
+        checkTravelerCredentials(username, password, email)
+        val newTraveler = userRepository.save(
+            User().apply {
+                this.username = username
+                this.password = passwordEncoder.encode(password)
+                this.email = email
+                roles = mutableSetOf(Role.CUSTOMER)
+            }
         )
         val newActivation = activationRepository.save(
             Activation().apply {
                 activationCode = getRandomActivationCode()
-                user = newUser
+                user = newTraveler
             }
         )
-        // TODO: fix this
-        /*
         emailService.sendEmail(
             username, email,
             newActivation.provisionalId.toString(), newActivation.activationCode
         )
-        */
         return ActivationOutputDTO(
             newActivation.provisionalId,
             newActivation.user!!.email
@@ -174,14 +185,34 @@ class UserServiceImpl : UserService {
      * and the correlated activation are removed from the db)
      * and throws an InvalidActivationException
      */
-    override fun validateUser(provisionalId: UUID, activationCode: String): UserOutputDTO {
-        val retrievedUser = checkActivation(provisionalId, activationCode)
+    override fun validateTraveler(provisionalId: UUID, activationCode: String): TravelerOutputDTO {
+        val retrievedTraveler = checkActivation(provisionalId, activationCode)
         activationRepository.deleteActivationByProvisionalId(provisionalId)
-        userRepository.setActiveById(retrievedUser.id)
-        return UserOutputDTO(
-            retrievedUser.id,
-            retrievedUser.username,
-            retrievedUser.email
+        userRepository.setActiveById(retrievedTraveler.id)
+        return TravelerOutputDTO(
+            retrievedTraveler.id,
+            retrievedTraveler.username,
+            retrievedTraveler.email,
+            retrievedTraveler.roles
+        )
+    }
+
+    override fun enrollAdmin(username: String, password: String, enrollingCapability: Int): AdminOutputDTO {
+        checkAdminCredentials(username, password)
+        val newAdmin = userRepository.save(
+            User().apply {
+                this.username = username
+                this.password = passwordEncoder.encode(password)
+                this.active = 1
+                roles = mutableSetOf(Role.ADMIN)
+                this.enrollingCapability = enrollingCapability
+            }
+        ).toAdminDTO()
+        return AdminOutputDTO(
+            newAdmin.id,
+            newAdmin.username,
+            newAdmin.enrollingCapability,
+            newAdmin.roles
         )
     }
 
