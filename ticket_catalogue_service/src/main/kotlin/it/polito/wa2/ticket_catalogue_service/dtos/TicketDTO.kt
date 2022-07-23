@@ -10,8 +10,9 @@ class TicketDTO (
     @JsonProperty("price") val price: Float,
     @JsonProperty("min_age") val minAge: Int?,
     @JsonProperty("max_age") val maxAge: Int?
+    @JsonProperty("used") val used : Boolean
 )
 
 fun Ticket.toDTO(): TicketDTO {
-    return TicketDTO(this.id, this.type, this.price, this.minAge, this.maxAge)
+    return TicketDTO(this.id, this.type, this.price, this.minAge, this.maxAge, this.used)
 }
