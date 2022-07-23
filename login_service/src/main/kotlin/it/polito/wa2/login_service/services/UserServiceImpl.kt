@@ -118,13 +118,10 @@ class UserServiceImpl : UserService {
                 user = newUser
             }
         )
-        // TODO: fix this
-        /*
         emailService.sendEmail(
             username, email,
             newActivation.provisionalId.toString(), newActivation.activationCode
         )
-        */
         return ActivationOutputDTO(
             newActivation.provisionalId,
             newActivation.user!!.email
