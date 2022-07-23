@@ -9,7 +9,7 @@ class TicketDTO (
     @JsonProperty("type") val type: TicketType,
     @JsonProperty("price") val price: Float,
     @JsonProperty("min_age") val minAge: Int?,
-    @JsonProperty("max_age") val maxAge: Int?
+    @JsonProperty("max_age") val maxAge: Int?,
     @JsonProperty("used") val used : Boolean
 )
 
