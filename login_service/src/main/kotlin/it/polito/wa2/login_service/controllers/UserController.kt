@@ -44,7 +44,6 @@ class UserController {
      * the activated existing user's id, username, email
      * otherwise, it returns a status code 404 (not found) and a null body
      */
-    // FIXME: handle HttpMessageNotReadableException (submitting an improperly formatted UUID)
     @PostMapping("/validate")
     fun userValidationPost(@RequestBody activationDTO: ActivationDTO): ResponseEntity<TravelerOutputDTO?> {
         try {
