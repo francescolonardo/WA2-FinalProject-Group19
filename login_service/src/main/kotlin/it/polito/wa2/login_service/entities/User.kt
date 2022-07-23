@@ -4,24 +4,17 @@ import javax.persistence.*
 
 @Entity
 @Table(name = "\"user\"")
-class User {
+class User(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long = 0L
+    var id: Long = 0L,
     @Column(unique = true)
-    var username: String = ""
-    var password: String = ""
-    @Column(unique = true)
-    var email: String = ""
-    var active: Int = 0
+    var username: String = "",
+    var password: String = "",
+    var email: String = "",
+    var active: Int = 0,
     @ElementCollection(targetClass = Role::class, fetch = FetchType.EAGER) // loads all the roles whenever load a user
     @Enumerated(EnumType.STRING)
-    var roles: Set<Role> = mutableSetOf()
-
-    constructor(username: String, password: String, email: String) {
-        this.username = username
-        this.password = password
-        this.email = email
-        this.roles = mutableSetOf(Role.CUSTOMER)
-    }
-}
+    var roles: Set<Role> = mutableSetOf(),
+    var enrollingCapability: Int = 0
+)
