@@ -26,8 +26,8 @@ class TicketServiceImpl : TicketService {
                 newTicketDTO.type,
                 newTicketDTO.price,
                 newTicketDTO.minAge,
-                newTicketDTO.maxAge,
-                false
+                newTicketDTO.maxAge
+                
             )
         ).toDTO()
     }
