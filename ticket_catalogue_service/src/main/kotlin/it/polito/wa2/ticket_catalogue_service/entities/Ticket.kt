@@ -12,8 +12,7 @@ data class Ticket (
     val type: TicketType,
     val price: Float,
     val minAge: Int?,
-    val maxAge: Int?,
-    val used : Boolean
+    val maxAge: Int?
 )
 
 enum class TicketType {
