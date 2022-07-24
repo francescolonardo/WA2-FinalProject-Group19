@@ -2,7 +2,7 @@ package it.polito.wa2.traveler_service.services
 
 import it.polito.wa2.traveler_service.dtos.TicketPurchasedDTO
 import it.polito.wa2.traveler_service.dtos.UserDetailsDTO
-
+import it.polito.wa2.traveler_service.entities.TicketPurchased
 interface TravelerService {
     fun getProfileById(id: Long): UserDetailsDTO?
     fun getProfileByUsername(username: String): UserDetailsDTO?
