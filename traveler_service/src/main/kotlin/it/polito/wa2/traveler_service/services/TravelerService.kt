@@ -11,4 +11,6 @@ interface TravelerService {
     fun getTicketsByUsername(username: String): List<TicketPurchasedDTO>?
     fun updateProfileByUsername(username: String, address: String, telephoneNumber: String): UserDetailsDTO?
     fun purchaseTicketsByUsername(username: String, quantity: Int, zones: String): List<TicketPurchasedDTO>?
+    fun updateUsedPropertyById(ticket: TicketPurchased): Boolean
+    fun getTicketDetailById(id:Long) : TicketPurchased?
 }
