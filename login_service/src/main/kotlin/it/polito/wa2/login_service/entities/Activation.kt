@@ -8,7 +8,7 @@ import java.util.*
 import javax.persistence.*
 
 @Entity
-class Activation (
+class Activation(
     @Id
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @GeneratedValue(generator = "uuid2")
