@@ -60,6 +60,22 @@ class TravelerServiceImpl : TravelerService {
         userDetailsRepository.save(retrievedProfile)
         return retrievedProfile.toDTO()
     }
+    
+    
+    override fun getTicketDetailById(id: Long): TicketPurchased? {
+        return ticketPurchasedRepository.findByIdOrNull(id)
+    }
+
+    override fun updateUsedPropertyById(ticket: TicketPurchased): Boolean {
+        if(!ticket.used)
+        {
+            ticket.used = true
+            ticketPurchasedRepository.save(ticket)
+            return true
+        }
+        return false
+    }
+    
 
     override fun purchaseTicketsByUsername(username: String, quantity: Int, zones: String): List<TicketPurchasedDTO>? {
         val retrievedProfile = userDetailsRepository.findUserDetailsByUsername(username)
