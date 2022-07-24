@@ -1,9 +1,9 @@
-package it.polito.wa2.traveler_service.security
+package it.polito.wa2.login_service.security
 
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
-import it.polito.wa2.traveler_service.dtos.JwtSubjectInfoDTO
-import it.polito.wa2.traveler_service.entities.Role
+import it.polito.wa2.login_service.dtos.JwtSubjectInfoDTO
+import it.polito.wa2.login_service.entities.Role
 import java.security.Key
 import java.util.*
 

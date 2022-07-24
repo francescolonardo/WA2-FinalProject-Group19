@@ -3,8 +3,8 @@ package it.polito.wa2.login_service.security
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
-import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.User
@@ -16,17 +16,13 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import kotlin.collections.HashMap
 
-class UserAuthenticationFilter : UsernamePasswordAuthenticationFilter {
-    private val jwtSecretB64Key: String
-    private val jwtExpirationTimeMs: Int
-    private val jwtHttpHeaderName: String
-
-    constructor(authenticationManager: AuthenticationManager, jwtSecretB64Key: String, jwtExpirationTimeMs: Int, jwtHttpHeaderName: String) {
-        this.authenticationManager = authenticationManager
-        this.jwtSecretB64Key = jwtSecretB64Key
-        this.jwtExpirationTimeMs = jwtExpirationTimeMs
-        this.jwtHttpHeaderName = jwtHttpHeaderName
-    }
+class UserAuthenticationFilter : UsernamePasswordAuthenticationFilter() {
+    @Value("\${jwt.authorization.signature-key-base64}")
+    private lateinit var jwtSecretB64Key: String
+    @Value("\${jwt.authorization.expiration-time-ms}")
+    private var jwtExpirationTimeMs: Int = 0
+    @Value("\${jwt.authorization.http-header-name}")
+    private lateinit var jwtHttpHeaderName: String
 
     override fun attemptAuthentication(
         request: HttpServletRequest,
@@ -62,5 +58,4 @@ class UserAuthenticationFilter : UsernamePasswordAuthenticationFilter {
         response.contentType = MediaType.APPLICATION_JSON_VALUE
         ObjectMapper().writeValue(response.outputStream, token)
     }
-
 }
