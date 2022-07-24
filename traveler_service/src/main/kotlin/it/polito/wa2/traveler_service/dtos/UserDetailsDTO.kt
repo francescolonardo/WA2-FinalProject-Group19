@@ -5,7 +5,7 @@ import it.polito.wa2.traveler_service.entities.Role
 import it.polito.wa2.traveler_service.entities.UserDetails
 import java.util.*
 
-data class UserDetailsDTO (
+data class UserDetailsDTO(
     @JsonProperty("username")
     val username: String = "",
     @JsonProperty("roles")

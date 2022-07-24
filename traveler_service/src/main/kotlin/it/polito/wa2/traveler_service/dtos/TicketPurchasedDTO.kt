@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import it.polito.wa2.traveler_service.entities.TicketPurchased
 import java.sql.Timestamp
 
-data class TicketPurchasedDTO (
+data class TicketPurchasedDTO(
     @JsonProperty val sub: Long = 0L,
     @JsonProperty val iat: Timestamp? = null,
     @JsonProperty val exp: Timestamp? = null,
