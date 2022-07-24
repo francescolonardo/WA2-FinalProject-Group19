@@ -13,6 +13,7 @@ import it.polito.wa2.traveler_service.repositories.UserDetailsRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import org.springframework.data.repository.findByIdOrNull
 import java.security.Key
 import java.sql.Timestamp
 import java.util.*
