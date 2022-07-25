@@ -92,7 +92,7 @@ class CustomerController {
         // check the status of ticket (used or not)
         val status = travelerService.updateUsedPropertyById(retrievedTicket)
         return if(status)
-            ResponseEntity.ok().body(retrievedTicket.toDTO())
+            ResponseEntity.ok().body(retrievedTicket.toDTO(""))
 
         else
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
