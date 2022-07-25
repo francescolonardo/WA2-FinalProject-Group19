@@ -24,16 +24,16 @@ class AdminController {
         return ResponseEntity.ok().body(retrievedProfiles)
     }
 
-    @GetMapping("/traveler/{userID}/profile")
-    fun getProfile(@PathVariable("userID") userID: Long): ResponseEntity<UserDetailsDTO?> {
-        val retrievedProfile = travelerService.getProfileById(userID)
+    @GetMapping("/traveler/{userId}/profile")
+    fun getProfile(@PathVariable("userId") userId: Long): ResponseEntity<UserDetailsDTO?> {
+        val retrievedProfile = travelerService.getProfileById(userId)
             ?: return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
         return ResponseEntity.ok().body(retrievedProfile)
     }
 
-    @GetMapping("/traveler/{userID}/tickets")
-    fun getTickets(@PathVariable("userID") userID: Long): ResponseEntity<List<TicketPurchasedDTO?>> {
-        val retrievedTickets = travelerService.getTicketsById(userID)
+    @GetMapping("/traveler/{userId}/tickets")
+    fun getTickets(@PathVariable("userId") userId: Long): ResponseEntity<List<TicketPurchasedDTO?>> {
+        val retrievedTickets = travelerService.getTicketsById(userId)
             ?: return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
         return ResponseEntity.ok().body(retrievedTickets)
     }

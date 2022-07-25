@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
+import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.User
@@ -16,13 +17,17 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import kotlin.collections.HashMap
 
-class UserAuthenticationFilter : UsernamePasswordAuthenticationFilter() {
+class UserAuthenticationFilter : UsernamePasswordAuthenticationFilter {
     @Value("\${jwt.authorization.signature-key-base64}")
     private lateinit var jwtSecretB64Key: String
     @Value("\${jwt.authorization.expiration-time-ms}")
     private var jwtExpirationTimeMs: Int = 0
     @Value("\${jwt.authorization.http-header-name}")
     private lateinit var jwtHttpHeaderName: String
+
+    constructor(authenticationManager: AuthenticationManager) {
+        this.authenticationManager = authenticationManager
+    }
 
     override fun attemptAuthentication(
         request: HttpServletRequest,
