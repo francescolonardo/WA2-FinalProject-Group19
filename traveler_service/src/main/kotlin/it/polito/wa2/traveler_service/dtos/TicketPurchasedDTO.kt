@@ -10,9 +10,12 @@ data class TicketPurchasedDTO(
     @JsonProperty val exp: Timestamp? = null,
     @JsonProperty val zid: String = "",
     @JsonProperty val jws: String = "",
+    @JsonProperty val used: Boolean = false,
     @JsonProperty val qrcode: String? = ""
 )
 
-fun TicketPurchased.toDTO(qrcode: String?): TicketPurchasedDTO {
-    return TicketPurchasedDTO(sub, iat, exp, zid, jws, qrcode)
-}
+
+    fun TicketPurchased.toDTO(qrcode: String?): TicketPurchasedDTO {
+        return TicketPurchasedDTO(sub, iat, exp, zid, jws, used, qrcode)
+
+    }
