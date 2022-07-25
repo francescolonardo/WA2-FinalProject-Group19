@@ -22,8 +22,14 @@ interface UserRepository : CrudRepository<User, Long> {
     @Transactional
     @Modifying
     @Query("update User u set u.active = 1 where u.id = :id")
-    fun setActiveById(id: Long)
+    fun activateById(id: Long)
+    @Transactional
+    @Modifying
+    @Query("update User u set u.active = 0 where u.id = :id")
+    fun deactivateById(id: Long)
 
     @Transactional(readOnly = true)
     fun findByUsername(username: String): User?
+
+    fun deleteByUsername(username: String): Int
 }
