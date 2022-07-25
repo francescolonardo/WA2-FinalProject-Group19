@@ -80,24 +80,4 @@ class CustomerController {
         return ResponseEntity.ok().body(purchasedTickets)
     }
     
-    
-       @PutMapping("/tickets/{id}/validate")
-     fun validateUsedTickets(
-        @PathVariable("id") id: Long,
-    ): ResponseEntity<TicketPurchasedDTO?> {
-
-        //first check the given id of the ticket is exist in db or not
-        val retrievedTicket = travelerService.getTicketDetailById(id)
-            ?: return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
-        // check the status of ticket (used or not)
-        val status = travelerService.updateUsedPropertyById(retrievedTicket)
-        return if(status)
-            ResponseEntity.ok().body(retrievedTicket.toDTO(""))
-
-        else
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
-    }
-    
-    
-    
 }
