@@ -2,7 +2,7 @@ package it.polito.wa2.traveler_service.security
 
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
-import it.polito.wa2.traveler_service.dtos.UserDetailsDTO
+import it.polito.wa2.traveler_service.dtos.JwtSubjectInfoDTO
 import it.polito.wa2.traveler_service.entities.Role
 import java.security.Key
 import java.util.*
@@ -28,7 +28,7 @@ class JwtUtils(base64Key: String) {
         return true
     }
 
-    fun getDetailsJwt(authToken: String): UserDetailsDTO {
+    fun getDetailsJwt(authToken: String): JwtSubjectInfoDTO {
         val decodedJwt = Jwts.parserBuilder()
             .setSigningKey(signatureKey)
             .build()
@@ -43,6 +43,6 @@ class JwtUtils(base64Key: String) {
                 else -> Role.ADMIN
             }
         }
-        return UserDetailsDTO(username, roles)
+        return JwtSubjectInfoDTO(username, roles)
     }
 }

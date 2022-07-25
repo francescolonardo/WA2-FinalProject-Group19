@@ -1,6 +1,6 @@
 package it.polito.wa2.traveler_service.security
 
-import it.polito.wa2.traveler_service.dtos.UserDetailsDTO
+import it.polito.wa2.traveler_service.dtos.JwtSubjectInfoDTO
 import org.springframework.web.filter.OncePerRequestFilter
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -11,7 +11,7 @@ import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-class JwtAuthenticationTokenFilter(
+class JwtAuthFilter(
     base64Key: String,
     private val jwtHttpHeaderName: String,
     private val jwtHttpHeaderPrefix: String) : OncePerRequestFilter() {
@@ -36,12 +36,12 @@ class JwtAuthenticationTokenFilter(
             return
         }
 
-        val userDetailsDTO: UserDetailsDTO = jwtUtils.getDetailsJwt(authorizationToken)
+        val jwtSubjectInfoDTO: JwtSubjectInfoDTO = jwtUtils.getDetailsJwt(authorizationToken)
         var authorities: Collection<SimpleGrantedAuthority> = ArrayList()
-        userDetailsDTO.roles.forEach { role ->
+        jwtSubjectInfoDTO.roles.forEach { role ->
             authorities += SimpleGrantedAuthority(role.toString())
         }
-        val authentication = UsernamePasswordAuthenticationToken(userDetailsDTO.username, null, authorities)
+        val authentication = UsernamePasswordAuthenticationToken(jwtSubjectInfoDTO.username, null, authorities)
         //authentication.details = WebAuthenticationDetailsSource().buildDetails(request) // TODO: remove this (?)
         SecurityContextHolder.getContext().authentication = authentication
 
