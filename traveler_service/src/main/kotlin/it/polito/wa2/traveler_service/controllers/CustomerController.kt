@@ -85,9 +85,6 @@ class CustomerController {
      fun validateUsedTickets(
         @PathVariable("id") id: Long,
     ): ResponseEntity<TicketPurchasedDTO?> {
-        val loggedUsername: String = SecurityContextHolder.getContext().authentication.name
-        val retrievedTickets = travelerService.getTicketsByUsername(loggedUsername)
-            ?: return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
 
         //first check the given id of the ticket is exist in db or not
         val retrievedTicket = travelerService.getTicketDetailById(id)
