@@ -9,9 +9,10 @@ data class TicketPurchasedDTO(
     @JsonProperty val iat: Timestamp? = null,
     @JsonProperty val exp: Timestamp? = null,
     @JsonProperty val zid: String = "",
+    @JsonProperty val username: String = "",
     @JsonProperty val jws: String = ""
 )
 
 fun TicketPurchased.toDTO(): TicketPurchasedDTO {
-    return TicketPurchasedDTO(sub, iat, exp, zid, jws)
+    return TicketPurchasedDTO(sub, iat, exp, zid, username, jws)
 }

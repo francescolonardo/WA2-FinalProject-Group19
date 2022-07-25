@@ -64,13 +64,13 @@ class TravelerServiceImpl : TravelerService {
     override fun purchaseTicketsByUsername(username: String, quantity: Int, zones: String): List<TicketPurchasedDTO>? {
         val retrievedProfile = userDetailsRepository.findUserDetailsByUsername(username)
             ?: return null
-        val createdTickets = createTickets(quantity, zones)
+        val createdTickets = createTickets(username, quantity, zones)
         retrievedProfile.tickets += createdTickets
         userDetailsRepository.save(retrievedProfile)
         return createdTickets.map { createdTicket -> createdTicket.toDTO() }
     }
 
-    fun createTickets(quantity: Int, zones: String): List<TicketPurchased> {
+    fun createTickets(username: String, quantity: Int, zones: String): List<TicketPurchased> {
         val jwtSecretByteKey = Base64.getDecoder().decode(jwtSecretB64Key)
         val jwtSecretKey: Key = Keys.hmacShaKeyFor(jwtSecretByteKey)
         val iat = Timestamp(System.currentTimeMillis())
@@ -82,12 +82,14 @@ class TravelerServiceImpl : TravelerService {
             ticket.iat = iat
             ticket.exp = exp
             ticket.zid = zones
+            ticket.username = username
             ticket.jws = Jwts.builder()
                 .setHeaderParam("typ", "JWT")
                 .setSubject(sub.toString())
                 .setIssuedAt(iat)
                 .setExpiration(exp)
                 .claim("zid", zones)
+                .claim("username", username)
                 .signWith(jwtSecretKey)
                 .compact()
             ticketPurchasedRepository.save(ticket)

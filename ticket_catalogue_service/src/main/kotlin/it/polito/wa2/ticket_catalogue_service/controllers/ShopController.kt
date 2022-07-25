@@ -21,7 +21,7 @@ class ShopController {
         @RequestBody billingInformationDTO: BillingInformationDTO,
         @RequestHeader("Authorization") authorizationHeader: String,
         loggedUser: Principal
-    ) : ResponseEntity<Long> {
+    ): ResponseEntity<Long> {
         if (ticketId != billingInformationDTO.ticketId)
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
         return try {

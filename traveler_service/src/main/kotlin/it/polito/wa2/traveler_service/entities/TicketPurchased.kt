@@ -11,7 +11,6 @@ class TicketPurchased {
     var iat: Timestamp? = null
     var exp: Timestamp? = null
     var zid: String = ""
+    var username: String = ""
     var jws: String = ""
-    @ManyToOne
-    var userDetails: UserDetails? = null
 }
