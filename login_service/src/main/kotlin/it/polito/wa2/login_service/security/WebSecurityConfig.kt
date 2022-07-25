@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
 @EnableWebSecurity
@@ -27,6 +28,8 @@ class WebSecurityConfig: WebSecurityConfigurerAdapter() {
     private lateinit var jwtExpirationTimeMs: String
     @Value("\${jwt.authorization.http-header-name}")
     private lateinit var jwtHttpHeaderName: String
+    @Value("\${jwt.authorization.http-header-prefix}")
+    private lateinit var jwtHttpHeaderPrefix: String
 
     override fun configure(auth: AuthenticationManagerBuilder) {
         auth.userDetailsService(loginService)
@@ -34,6 +37,7 @@ class WebSecurityConfig: WebSecurityConfigurerAdapter() {
     }
 
     override fun configure(http: HttpSecurity) {
+        val jwtAuthenticationTokenFilter = JwtAuthenticationTokenFilter(jwtSecretB64Key, jwtHttpHeaderName, jwtHttpHeaderPrefix)
         val userAuthenticationFilter = UserAuthenticationFilter(authenticationManagerBean(), jwtSecretB64Key, jwtExpirationTimeMs.toInt(), jwtHttpHeaderName)
         userAuthenticationFilter.setFilterProcessesUrl("/user/login") // changes login path (where to post username and password)
 
@@ -46,9 +50,13 @@ class WebSecurityConfig: WebSecurityConfigurerAdapter() {
             .antMatchers(HttpMethod.POST,"/user/validate").permitAll()
             .antMatchers(HttpMethod.GET,"/user/validate/**").permitAll()
             .antMatchers(HttpMethod.POST,"/user/login").permitAll()
+            .antMatchers(HttpMethod.POST,"/turnstile/token").permitAll()
+            .antMatchers(HttpMethod.POST,"/turnstile/register").hasAuthority("ADMIN")
 
         http.authorizeRequests()
             .anyRequest().authenticated() // allows only authenticated users to be able to access the remaining paths
+
+        http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter::class.java)
 
         // TODO: uncomment this if you want to use the form login provided by Spring,
         // that requires a x-www-form-urlencoded body

@@ -24,6 +24,8 @@ class TravelerServiceImpl : TravelerService {
     private lateinit var userDetailsRepository: UserDetailsRepository
     @Autowired
     private lateinit var ticketPurchasedRepository: TicketPurchasedRepository
+    @Autowired
+    private lateinit var qrCodeService: QRCodeServiceImpl
 
     @Value("\${jwt.tickets.signature-key-base64}")
     private lateinit var jwtSecretB64Key: String
@@ -45,12 +47,18 @@ class TravelerServiceImpl : TravelerService {
 
     override fun getTicketsById(id: Long): List<TicketPurchasedDTO>? {
         return userDetailsRepository.findUserDetailsById(id)
-            ?.tickets?.map { ticket -> ticket.toDTO() }
+            ?.tickets?.map { ticket ->
+                val qrcode = qrCodeService.generateQRCode(ticket.jws)
+                ticket.toDTO(qrcode)
+            }
     }
 
     override fun getTicketsByUsername(username: String): List<TicketPurchasedDTO>? {
         return userDetailsRepository.findUserDetailsByUsername(username)
-            ?.tickets?.map { ticket -> ticket.toDTO() }
+            ?.tickets?.map { ticket ->
+                val qrcode = qrCodeService.generateQRCode(ticket.jws)
+                ticket.toDTO(qrcode)
+            }
     }
 
     override fun updateProfileByUsername(username: String, address: String, telephoneNumber: String): UserDetailsDTO? {
@@ -84,7 +92,10 @@ class TravelerServiceImpl : TravelerService {
         val createdTickets = createTickets(quantity, zones)
         retrievedProfile.tickets += createdTickets
         userDetailsRepository.save(retrievedProfile)
-        return createdTickets.map { createdTicket -> createdTicket.toDTO() }
+        return createdTickets.map { createdTicket ->
+            val qrcode = qrCodeService.generateQRCode(createdTicket.jws)
+            createdTicket.toDTO(qrcode)
+        }
     }
 
     fun createTickets(quantity: Int, zones: String): List<TicketPurchased> {

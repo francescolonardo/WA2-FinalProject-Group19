@@ -15,4 +15,5 @@ class TicketPurchased {
     var used: Boolean = false
     @ManyToOne
     var userDetails: UserDetails? = null
+
 }

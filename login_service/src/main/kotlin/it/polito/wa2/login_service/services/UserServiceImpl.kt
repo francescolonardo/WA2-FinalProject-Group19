@@ -105,12 +105,11 @@ class UserServiceImpl : UserService {
     override fun registerUser(username: String, password: String, email: String): ActivationOutputDTO {
         checkUser(username, password, email)
         val newUser = userRepository.save(
-            User(
-                0L,
-                username,
-                passwordEncoder.encode(password),
-                email
-            )
+            User().apply {
+                this.username = username
+                this.password = passwordEncoder.encode(password)
+                this.email = email
+            }
         )
         val newActivation = activationRepository.save(
             Activation().apply {
@@ -118,13 +117,10 @@ class UserServiceImpl : UserService {
                 user = newUser
             }
         )
-        // TODO: fix this
-        /*
         emailService.sendEmail(
             username, email,
             newActivation.provisionalId.toString(), newActivation.activationCode
         )
-        */
         return ActivationOutputDTO(
             newActivation.provisionalId,
             newActivation.user!!.email
