@@ -11,11 +11,11 @@ data class TicketPurchasedDTO(
     @JsonProperty val zid: String = "",
     @JsonProperty val jws: String = "",
     @JsonProperty val used: Boolean = false,
-    @JsonProperty val qrcode: String? = ""
+    @JsonProperty val qrcode: String? = "",
+    @JsonProperty val username: String = ""
 )
 
 
-    fun TicketPurchased.toDTO(qrcode: String?): TicketPurchasedDTO {
-        return TicketPurchasedDTO(sub, iat, exp, zid, jws, used, qrcode)
-
-    }
+fun TicketPurchased.toDTO(qrcode: String?): TicketPurchasedDTO {
+    return TicketPurchasedDTO(sub, iat, exp, zid, jws, used, qrcode, username)
+}
