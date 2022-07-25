@@ -27,6 +27,7 @@ import java.time.ZoneId
 
 @Service
 class OrderServiceImpl : OrderService {
+    private val travelerWebClient = WebClient.create("http://localhost:8282") // traveler-service
     @Autowired
     private lateinit var ticketRepository: TicketRepository
     @Autowired
@@ -37,7 +38,6 @@ class OrderServiceImpl : OrderService {
     private lateinit var paymentRequestsTopicName: String
     @Autowired
     private lateinit var kafkaTemplate: KafkaTemplate<String, Any>
-    private val travelerWebClient = WebClient.create("http://localhost:8282") // traveler-service
 
     override suspend fun addNewOrder(
         billingInformationDTO: BillingInformationDTO,

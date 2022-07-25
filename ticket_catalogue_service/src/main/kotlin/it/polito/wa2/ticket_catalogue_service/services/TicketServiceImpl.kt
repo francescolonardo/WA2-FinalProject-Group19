@@ -24,6 +24,7 @@ class TicketServiceImpl : TicketService {
             Ticket(
                 null,
                 newTicketDTO.type,
+                newTicketDTO.validityZones,
                 newTicketDTO.price,
                 newTicketDTO.minAge,
                 newTicketDTO.maxAge
