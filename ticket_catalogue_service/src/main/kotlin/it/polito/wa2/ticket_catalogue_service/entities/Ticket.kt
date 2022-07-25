@@ -10,6 +10,7 @@ data class Ticket (
     val id: Long?,
     @Column("type_")
     val type: TicketType,
+    val validityZones: String,
     val price: Float,
     val minAge: Int?,
     val maxAge: Int?
