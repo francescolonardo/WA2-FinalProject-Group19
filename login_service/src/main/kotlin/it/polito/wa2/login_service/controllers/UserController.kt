@@ -54,7 +54,7 @@ class UserController {
             return ResponseEntity.status(HttpStatus.CREATED).body(travelerOutputDTO)
         } catch (ex: InvalidActivationException) {
             println(ex.localizedMessage)
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
         }
     }
 
@@ -65,10 +65,10 @@ class UserController {
      * but in this case we have a get request with two parameters
      * (used for the activation link in the email received during registration)
      */
-    @GetMapping("/validate/provisional_id={provisionalId}&activation_code={activationCode}")
+    @GetMapping("/validate")
     fun userValidationGet(
-        @PathVariable("provisionalId") provisionalId: UUID,
-        @PathVariable("activationCode") activationCode: String
+        @RequestParam("provisional_id") provisionalId: UUID,
+        @RequestParam("activation_code") activationCode: String
     ): String {
         try {
             val userOutputDTO = userService.validateTraveler(provisionalId, activationCode)

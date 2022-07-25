@@ -1,6 +1,7 @@
 package it.polito.wa2.login_service.services
 
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.scheduling.annotation.Async
@@ -12,12 +13,15 @@ class EmailServiceImpl : EmailService {
     @Autowired
     private lateinit var mailSender: JavaMailSender
 
+    @Value("\${server.port}")
+    private lateinit var serverPort: String
+
     //private val fromEmail = "noreply@ticketservice.com"
     private val fromEmail = "wa2.group19@gmail.com"
     private val emailSubject = "Confirmation instructions"
 
     private fun getEmailBody(username: String, provisionalId: String, activationCode: String): String {
-        val confirmationLink = "http://localhost:8080/user/validate/" +
+        val confirmationLink = "http://localhost:$serverPort/user/validate?" +
                 "provisional_id=$provisionalId&" +
                 "activation_code=$activationCode"
         return "<h2>Welcome $username!</h2>" +

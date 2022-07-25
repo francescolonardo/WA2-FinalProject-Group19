@@ -39,8 +39,9 @@ class JwtUtils(base64Key: String) {
         val roles: MutableSet<Role> = mutableSetOf()
         rolesString.map { roleString ->
             roles += when (roleString) {
-                "CUSTOMER" -> Role.CUSTOMER
-                else -> Role.ADMIN
+                "ADMIN" -> Role.ADMIN
+                "EMBEDDED" -> Role.EMBEDDED
+                else -> Role.CUSTOMER
             }
         }
         return JwtSubjectInfoDTO(username, roles)
