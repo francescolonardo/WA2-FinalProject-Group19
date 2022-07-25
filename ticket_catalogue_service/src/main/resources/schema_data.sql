@@ -24,12 +24,12 @@ CREATE TABLE IF NOT EXISTS orders
     FOREIGN KEY(ticket_id) REFERENCES tickets(id)
 );
 
-INSERT INTO tickets(type_, price, min_age, max_age)
-VALUES('ORDINAL', 2.50, null, 30);
-INSERT INTO tickets(type_, price, min_age, max_age)
-VALUES('WEEKEND', 2.00, 18, null);
-INSERT INTO tickets(type_, price, min_age, max_age)
-VALUES('WEEKEND', 2.00, 18, 30);
+INSERT INTO tickets(type_, validity_zones, price, min_age, max_age)
+VALUES('ORDINAL', "ABC", 2.50, null, 30);
+INSERT INTO tickets(type_, validity_zones, price, min_age, max_age)
+VALUES('WEEKEND', "BCD", 2.00, 18, null);
+INSERT INTO tickets(type_, validity_zones, price, min_age, max_age)
+VALUES('WEEKEND', "DEF", 2.00, 18, 30);
 INSERT INTO orders(ticket_id, quantity, status, username, purchased)
 VALUES(1, 100, 'PENDING', 'john', false);
 INSERT INTO orders(ticket_id, quantity, status, username, purchased)

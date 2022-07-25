@@ -27,7 +27,6 @@ import java.time.ZoneId
 
 @Service
 class OrderServiceImpl : OrderService {
-    private val travelerWebClient = WebClient.create("http://localhost:8282") // traveler-service
     @Autowired
     private lateinit var ticketRepository: TicketRepository
     @Autowired
@@ -38,6 +37,7 @@ class OrderServiceImpl : OrderService {
     private lateinit var paymentRequestsTopicName: String
     @Autowired
     private lateinit var kafkaTemplate: KafkaTemplate<String, Any>
+    private val travelerWebClient = WebClient.create("http://localhost:8282") // traveler-service
 
     override suspend fun addNewOrder(
         billingInformationDTO: BillingInformationDTO,
@@ -95,8 +95,9 @@ class OrderServiceImpl : OrderService {
     override suspend fun getOrderByIdAndUsername(orderId: Long, username: String, authorizationHeader: String): OrderDTO? {
         val order = orderRepository.findByIdAndUsername(orderId, username)
             ?: throw OrderNotFoundException("Order not found with orderId=${orderId}, username=${username}")
+        val ticket = ticketRepository.findById(order.ticketId)
         if (!order.purchased && order.status == OrderStatus.COMPLETED) {
-            buyOrderedTickets(order.quantity, authorizationHeader)
+            buyOrderedTickets(order.quantity, ticket!!.validityZones, authorizationHeader)
             order.purchased = true
             orderRepository.save(order)
         }
@@ -133,11 +134,11 @@ class OrderServiceImpl : OrderService {
             .map { order -> order.toDTO() }
     }
 
-    suspend fun buyOrderedTickets(ticketsQuantity: Int, authorizationHeader: String) {
+    suspend fun buyOrderedTickets(ticketsQuantity: Int, ticketValidityZones: String, authorizationHeader: String) {
         val buyTicketsRequestDTO = BuyTicketsRequestDTO(
             "buy_tickets",
             ticketsQuantity,
-            "ABC" // TODO: change this
+            ticketValidityZones
         )
         val boughtOrderedTickets: List<TicketPurchasedDTO> = travelerWebClient
             .post()
