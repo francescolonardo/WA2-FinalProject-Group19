@@ -26,5 +26,4 @@ class LoginServiceImpl: UserDetailsService {
         }
         return org.springframework.security.core.userdetails.User(user.username, user.password, authorities)
     }
-
 }

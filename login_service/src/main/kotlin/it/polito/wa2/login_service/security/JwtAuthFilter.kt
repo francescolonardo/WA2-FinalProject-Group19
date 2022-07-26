@@ -1,17 +1,17 @@
 package it.polito.wa2.login_service.security
 
 import it.polito.wa2.login_service.dtos.JwtSubjectInfoDTO
-import org.springframework.web.filter.OncePerRequestFilter
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.web.filter.OncePerRequestFilter
 import java.util.ArrayList
 import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-class JwtAuthenticationTokenFilter(
+class JwtAuthFilter(
     base64Key: String,
     private val jwtHttpHeaderName: String,
     private val jwtHttpHeaderPrefix: String) : OncePerRequestFilter() {
