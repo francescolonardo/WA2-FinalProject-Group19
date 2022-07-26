@@ -3,7 +3,7 @@ package it.polito.wa2.ticket_catalogue_service.dtos
 import com.fasterxml.jackson.annotation.JsonProperty
 import it.polito.wa2.ticket_catalogue_service.entities.Order
 import it.polito.wa2.ticket_catalogue_service.entities.OrderStatus
-
+import java.sql.Timestamp
 data class OrderDTO (
     @JsonProperty("id") val id: Long?,
     @JsonProperty("ticket_id") val ticketId: Long,
