@@ -237,18 +237,23 @@ class UserServiceImpl : UserService {
         userRepository.deleteByUsername(username)
     }
 
-    override fun enrollAdmin(username: String, password: String, enrollingCapability: Int): AdminOutputDTO {
-        val retrievedAdmin = userRepository.findByUsername(username)
+    override fun enrollAdmin(
+        loggedUsername: String,
+        newAdminUsername: String,
+        newAdminPassword: String,
+        newAdminEnrollingCapability: Int
+    ): AdminOutputDTO {
+        val retrievedAdmin = userRepository.findByUsername(loggedUsername)
         if (retrievedAdmin?.enrollingCapability == 0)
             throw EnrollingCapabilityException("forbidden")
-        checkAdminCredentials(username, password)
+        checkAdminCredentials(newAdminUsername, newAdminPassword)
         val newAdmin = userRepository.save(
             User().apply {
-                this.username = username
-                this.password = passwordEncoder.encode(password)
+                this.username = newAdminUsername
+                this.password = passwordEncoder.encode(newAdminPassword)
                 this.active = 1
                 roles = mutableSetOf(Role.ADMIN)
-                this.enrollingCapability = enrollingCapability
+                this.enrollingCapability = newAdminEnrollingCapability
             }
         ).toAdminDTO()
         return AdminOutputDTO(

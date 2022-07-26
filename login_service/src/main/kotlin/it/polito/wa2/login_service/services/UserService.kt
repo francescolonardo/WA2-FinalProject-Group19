@@ -9,6 +9,6 @@ interface UserService {
     fun loginUser(username: String, password: String): AuthorizationTokenDTO
     fun changePasswordUser(username: String, oldPassword: String, newPassword: String)
     fun deleteAccountTraveler(username: String)
-    fun enrollAdmin(username: String, password: String, enrollingCapability: Int): AdminOutputDTO
+    fun enrollAdmin(loggedUsername: String, newAdminUsername: String, newAdminPassword: String, newAdminEnrollingCapability: Int): AdminOutputDTO
     fun disableAccountAdmin(username: String, userId: Long)
 }

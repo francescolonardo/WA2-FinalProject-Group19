@@ -25,20 +25,21 @@ class AdminController {
         @RequestHeader("Authorization") authorizationHeader: String,
         loggedUser: Principal
     ): ResponseEntity<AdminOutputDTO?> {
-        try {
+        return try {
             val adminOutputDTO = userService.enrollAdmin(
+                loggedUser.name,
                 adminDTO.username,
                 adminDTO.password,
                 adminDTO.enrollingCapability
             )
-            return ResponseEntity.status(HttpStatus.CREATED).body(adminOutputDTO)
+            ResponseEntity.status(HttpStatus.CREATED).body(adminOutputDTO)
         } catch (ex: EnrollingCapabilityException) {
             println(ex.localizedMessage)
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null)
+            ResponseEntity.status(HttpStatus.FORBIDDEN).body(null)
         }
         catch (ex: InvalidUserException) {
             println(ex.localizedMessage)
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
         }
     }
 
@@ -48,17 +49,17 @@ class AdminController {
         @RequestHeader("Authorization") authorizationHeader: String,
         loggedUser: Principal
     ): ResponseEntity<Any> {
-        try {
+        return try {
             userService.disableAccountAdmin(loggedUser.name, userId)
-            return ResponseEntity.status(HttpStatus.OK).body(null)
+            ResponseEntity.status(HttpStatus.OK).body(null)
         } catch (ex: EnrollingCapabilityException) {
             println(ex.localizedMessage)
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null)
+            ResponseEntity.status(HttpStatus.FORBIDDEN).body(null)
         } catch (ex: DisableAccountException) {
             println(ex.localizedMessage)
             val error = HashMap<String, String>()
             error["error"] = ex.localizedMessage
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error)
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error)
         }
     }
 }
