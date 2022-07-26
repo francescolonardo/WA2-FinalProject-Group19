@@ -16,7 +16,7 @@ interface OrderRepository : CoroutineCrudRepository<Order, Long> {
     @Query("SELECT all FROM Order o WHERE o.orderdate between '2022-01-01' and '2022-12-30'")
     fun findOrdersIn2022(): Flow<Order?>?
 
-    @Query("SELECT all FROM Order o WHERE o.orderdate < :constraint ")
+    @Query("SELECT all FROM Order o WHERE o.orderdate > :constraint ")
     fun findOrdersByDate(
         @Param("constraint") start: Date?,
     ): Flow<Order?>?
