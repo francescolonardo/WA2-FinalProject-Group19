@@ -2,6 +2,7 @@ package it.polito.wa2.login_service.controllers
 
 import it.polito.wa2.login_service.dtos.*
 import it.polito.wa2.login_service.exceptions.InvalidActivationException
+import it.polito.wa2.login_service.exceptions.InvalidPasswordException
 import it.polito.wa2.login_service.exceptions.InvalidUserException
 import it.polito.wa2.login_service.exceptions.LoginException
 import it.polito.wa2.login_service.services.UserServiceImpl
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.security.Principal
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -28,14 +30,14 @@ class UserController {
      */
     @PostMapping("/register")
     fun userRegistration(@RequestBody userDTO: TravelerDTO): ResponseEntity<Any?> {
-        try {
+        return try {
             val activationOutputDTO = userService.registerTraveler(userDTO.username, userDTO.password, userDTO.email)
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(activationOutputDTO)
+            ResponseEntity.status(HttpStatus.ACCEPTED).body(activationOutputDTO)
         } catch (ex: InvalidUserException) {
             println(ex.localizedMessage)
             val error = HashMap<String, String>()
             error["error"] = ex.localizedMessage
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error)
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error)
         }
     }
 
@@ -48,18 +50,18 @@ class UserController {
      * otherwise, it returns a status code 404 (not found) and a null body
      */
     @PostMapping("/validate")
-    fun userValidationPost(@RequestBody activationDTO: ActivationDTO): ResponseEntity<Any?> {
-        try {
+    fun userValidation(@RequestBody activationDTO: ActivationDTO): ResponseEntity<Any?> {
+        return try {
             val travelerOutputDTO = userService.validateTraveler(
                 activationDTO.provisionalId,
                 activationDTO.activationCode
             )
-            return ResponseEntity.status(HttpStatus.CREATED).body(travelerOutputDTO)
+            ResponseEntity.status(HttpStatus.CREATED).body(travelerOutputDTO)
         } catch (ex: InvalidActivationException) {
             println(ex.localizedMessage)
             val error = HashMap<String, String>()
             error["error"] = ex.localizedMessage
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error)
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error)
         }
     }
 
@@ -71,16 +73,16 @@ class UserController {
      * (used for the activation link in the email received during registration)
      */
     @GetMapping("/validate")
-    fun userValidationGet(
+    fun userValidation(
         @RequestParam("provisional_id") provisionalId: UUID,
         @RequestParam("activation_code") activationCode: String
     ): String {
-        try {
+        return try {
             val userOutputDTO = userService.validateTraveler(provisionalId, activationCode)
-            return "Email ${userOutputDTO.email} confirmed, user ${userOutputDTO.username} activated!"
+            "Email ${userOutputDTO.email} confirmed, user ${userOutputDTO.username} activated!"
         } catch (ex: InvalidActivationException) {
             println(ex.localizedMessage)
-            return "Validation error: " + ex.localizedMessage
+            "Validation error: " + ex.localizedMessage
         }
     }
 
@@ -89,16 +91,44 @@ class UserController {
      *
      */
     @PostMapping("/login")
-    fun userLoginPost(@RequestBody userLoginDTO: UserLoginDTO): ResponseEntity<Any?> {
-        try {
+    fun userLogin(@RequestBody userLoginDTO: UserLoginDTO): ResponseEntity<Any?> {
+        return try {
             val authorizationTokenDTO = userService.loginUser(userLoginDTO.username, userLoginDTO.password)
-            return ResponseEntity.ok(authorizationTokenDTO)
+            ResponseEntity.ok(authorizationTokenDTO)
         } catch (ex: LoginException) {
             println(ex.localizedMessage)
             val error = HashMap<String, String>()
             error["error"] = ex.localizedMessage
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error)
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error)
         }
     }
 
+    @PostMapping("/changePassword")
+    fun userChangePassword(
+        @RequestBody changePasswordDTO: ChangePasswordDTO,
+        @RequestHeader("Authorization") authorizationHeader: String,
+        loggedUser: Principal
+    ): ResponseEntity<Any> {
+        return try {
+            userService.changePasswordUser(
+                loggedUser.name,
+                changePasswordDTO.oldPassword,
+                changePasswordDTO.newPassword
+            )
+            ResponseEntity.status(HttpStatus.OK).body(null)
+        } catch (ex: InvalidPasswordException) {
+            val error = HashMap<String, String>()
+            error["error"] = ex.localizedMessage
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error)
+        }
+    }
+
+    @DeleteMapping("/deleteAccount")
+    fun userDeleteAccount(
+        @RequestHeader("Authorization") authorizationHeader: String,
+        loggedUser: Principal
+    ): ResponseEntity<Any> {
+        userService.deleteAccountTraveler(loggedUser.name)
+        return ResponseEntity.status(HttpStatus.OK).body(null)
+    }
 }

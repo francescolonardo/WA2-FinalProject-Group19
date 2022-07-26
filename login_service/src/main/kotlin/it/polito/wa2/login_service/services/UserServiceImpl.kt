@@ -6,17 +6,14 @@ import it.polito.wa2.login_service.dtos.*
 import it.polito.wa2.login_service.entities.Activation
 import it.polito.wa2.login_service.entities.Role
 import it.polito.wa2.login_service.entities.User
-import it.polito.wa2.login_service.exceptions.InvalidActivationException
-import it.polito.wa2.login_service.exceptions.InvalidUserException
-import it.polito.wa2.login_service.exceptions.LoginException
+import it.polito.wa2.login_service.exceptions.*
 import it.polito.wa2.login_service.repositories.ActivationRepository
 import it.polito.wa2.login_service.repositories.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Bean
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
-import java.security.DrbgParameters.Capability
+
 import java.security.Key
 import java.time.LocalDate
 import java.util.*
@@ -152,7 +149,7 @@ class UserServiceImpl : UserService {
         }
     }
 
-    private fun checkActivation(provisionalId: UUID, activationCode: String): User {
+    private fun checkActivationTraveler(provisionalId: UUID, activationCode: String): User {
         val retrievedActivation = activationRepository.getActivationByProvisionalId(provisionalId)
         if (retrievedActivation != null && retrievedActivation.deadline.isAfter(LocalDate.now())) {
             if (retrievedActivation.user != null) {
@@ -186,33 +183,14 @@ class UserServiceImpl : UserService {
      * and throws an InvalidActivationException
      */
     override fun validateTraveler(provisionalId: UUID, activationCode: String): TravelerOutputDTO {
-        val retrievedTraveler = checkActivation(provisionalId, activationCode)
+        val retrievedTraveler = checkActivationTraveler(provisionalId, activationCode)
         activationRepository.deleteActivationByProvisionalId(provisionalId)
-        userRepository.setActiveById(retrievedTraveler.id)
+        userRepository.activateById(retrievedTraveler.id)
         return TravelerOutputDTO(
             retrievedTraveler.id,
             retrievedTraveler.username,
             retrievedTraveler.email,
             retrievedTraveler.roles
-        )
-    }
-
-    override fun enrollAdmin(username: String, password: String, enrollingCapability: Int): AdminOutputDTO {
-        checkAdminCredentials(username, password)
-        val newAdmin = userRepository.save(
-            User().apply {
-                this.username = username
-                this.password = passwordEncoder.encode(password)
-                this.active = 1
-                roles = mutableSetOf(Role.ADMIN)
-                this.enrollingCapability = enrollingCapability
-            }
-        ).toAdminDTO()
-        return AdminOutputDTO(
-            newAdmin.id,
-            newAdmin.username,
-            newAdmin.enrollingCapability,
-            newAdmin.roles
         )
     }
 
@@ -233,5 +211,68 @@ class UserServiceImpl : UserService {
             .signWith(jwtSecretKey)
             .compact()
         return AuthorizationTokenDTO(accessToken)
+    }
+
+    override fun changePasswordUser(username: String, oldPassword: String, newPassword: String) {
+        val retrievedUser = userRepository.findByUsername(username)
+        if (!passwordEncoder.matches(oldPassword, retrievedUser?.password))
+            throw InvalidPasswordException("wrong old password")
+        if (!checkPasswordStrength(newPassword))
+            throw InvalidPasswordException("new password not strong enough")
+        if (oldPassword == newPassword)
+            throw InvalidPasswordException("old password and new password can't be the same")
+        userRepository.save(
+            User().apply {
+                this.id = retrievedUser!!.id
+                this.username = retrievedUser.username
+                this.password = passwordEncoder.encode(newPassword)
+                this.email = retrievedUser.email
+                this.active = retrievedUser.active
+                this.enrollingCapability = retrievedUser.enrollingCapability
+            }
+        )
+    }
+
+    override fun deleteAccountTraveler(username: String) {
+        userRepository.deleteByUsername(username)
+    }
+
+    override fun enrollAdmin(
+        loggedUsername: String,
+        newAdminUsername: String,
+        newAdminPassword: String,
+        newAdminEnrollingCapability: Int
+    ): AdminOutputDTO {
+        val retrievedAdmin = userRepository.findByUsername(loggedUsername)
+        if (retrievedAdmin?.enrollingCapability == 0)
+            throw EnrollingCapabilityException("forbidden")
+        checkAdminCredentials(newAdminUsername, newAdminPassword)
+        val newAdmin = userRepository.save(
+            User().apply {
+                this.username = newAdminUsername
+                this.password = passwordEncoder.encode(newAdminPassword)
+                this.active = 1
+                roles = mutableSetOf(Role.ADMIN)
+                this.enrollingCapability = newAdminEnrollingCapability
+            }
+        ).toAdminDTO()
+        return AdminOutputDTO(
+            newAdmin.id,
+            newAdmin.username,
+            newAdmin.enrollingCapability,
+            newAdmin.roles
+        )
+    }
+
+    override fun disableAccountAdmin(username: String, userId: Long) {
+        val retrievedAdmin = userRepository.findByUsername(username)
+        if (retrievedAdmin?.enrollingCapability == 0)
+            throw EnrollingCapabilityException("forbidden")
+        val retrievedUser = userRepository.findById(userId)
+        if (retrievedUser.isEmpty)
+            throw DisableAccountException("user id does not exist")
+        if (retrievedAdmin?.id == retrievedUser.get().id)
+            throw DisableAccountException("logged user account can't be disabled")
+        userRepository.deactivateById(userId)
     }
 }

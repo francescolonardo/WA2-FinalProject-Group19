@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
+import java.util.HashMap
 
 @RestController
 @RequestMapping("/shop")
@@ -21,13 +22,14 @@ class ShopController {
         @RequestBody billingInformationDTO: BillingInformationDTO,
         @RequestHeader("Authorization") authorizationHeader: String,
         loggedUser: Principal
-    ) : ResponseEntity<Long> {
+    ): ResponseEntity<Any> {
         if (ticketId != billingInformationDTO.ticketId)
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
         return try {
-            val newOrderId = orderService.addNewOrder(billingInformationDTO, loggedUser.name, authorizationHeader)
+            val orderId = HashMap<String, Long>()
+            orderId["orderId"] = orderService.addNewOrder(billingInformationDTO, loggedUser.name, authorizationHeader)
                 ?: return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
-            return ResponseEntity.ok(newOrderId)
+            return ResponseEntity.ok(orderId)
         } catch (ex: TicketNotFoundException) {
             ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
         }
