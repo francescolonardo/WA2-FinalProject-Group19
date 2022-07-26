@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS tickets
 (
     id          BIGSERIAL,
     type_       VARCHAR(255),
-    validity_zones  VARCHAR(10),
+    validity_zones  VARCHAR(5),
     price       FLOAT,
     min_age     INTEGER,
     max_age     INTEGER,
@@ -28,9 +28,9 @@ CREATE TABLE IF NOT EXISTS orders
 INSERT INTO tickets(type_, validity_zones, price, min_age, max_age)
 VALUES('ORDINAL', 'ABC', 2.50, null, 30);
 INSERT INTO tickets(type_, validity_zones, price, min_age, max_age)
-VALUES('WEEKEND', 'BCD', 2.00, 18, null);
+VALUES('WEEKEND', 'CDE', 2.00, 18, null);
 INSERT INTO tickets(type_, validity_zones, price, min_age, max_age)
-VALUES('WEEKEND', 'DEF', 2.00, 18, 30);
+VALUES('WEEKEND', 'B', 2.00, 18, 30);
 INSERT INTO orders(ticket_id, quantity, status, username, purchased)
 VALUES(1, 100, 'PENDING', 'john', false);
 INSERT INTO orders(ticket_id, quantity, status, username, purchased)

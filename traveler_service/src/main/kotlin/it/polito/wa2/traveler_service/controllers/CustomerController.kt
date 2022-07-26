@@ -65,14 +65,16 @@ class CustomerController {
         if (buyTicketsDTO.cmd != "buy_tickets" ||
             buyTicketsDTO.quantity < 1 ||
             buyTicketsDTO.zones.isEmpty() ||
-            buyTicketsDTO.zones.length > 3) {
+            buyTicketsDTO.zones.length > 5) {
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(null)
         }
         val zonesList = mutableSetOf<Char>()
         for (i in 0 until buyTicketsDTO.zones.length) {
             if ((buyTicketsDTO.zones[i] != 'A' &&
                 buyTicketsDTO.zones[i] != 'B' &&
-                buyTicketsDTO.zones[i] != 'C') ||
+                buyTicketsDTO.zones[i] != 'C' &&
+                buyTicketsDTO.zones[i] != 'D' &&
+                buyTicketsDTO.zones[i] != 'E') ||
                 !zonesList.add(buyTicketsDTO.zones[i])) {
                 return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(null)
             }
