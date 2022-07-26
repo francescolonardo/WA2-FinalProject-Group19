@@ -76,7 +76,7 @@ class OrderServiceImpl : OrderService {
                 OrderStatus.PENDING,
                 username,
                 false,
-                Timestamp(System.currentTimeMillis()) // add time stamp to order 
+                Timestamp(System.currentTimeMillis()) // add time stamp to order
             )
         )
         kafkaTemplate.send(
@@ -101,6 +101,7 @@ class OrderServiceImpl : OrderService {
         if (!order.purchased && order.status == OrderStatus.COMPLETED) {
             buyOrderedTickets(order.quantity, ticket!!.validityZones, authorizationHeader)
             order.purchased = true
+            order.orderdate = Timestamp(System.currentTimeMillis())
             orderRepository.save(order)
         }
         return order.toDTO()
