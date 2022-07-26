@@ -95,7 +95,7 @@ class UserServiceImpl : UserService {
         }
         else
             errorExplanation = "fields cannot be empty"
-        throw InvalidUserException("Admin not valid: $errorExplanation")
+        throw InvalidUserException(errorExplanation)
     }
 
     private fun getRandomActivationCode(length: Int = 6): String {
@@ -168,7 +168,7 @@ class UserServiceImpl : UserService {
         }
         else
             errorExplanation = "activation not found or expired"
-        throw InvalidActivationException("Activation not valid: $errorExplanation")
+        throw InvalidActivationException(errorExplanation)
     }
 
     /*
@@ -199,7 +199,7 @@ class UserServiceImpl : UserService {
         if (retrievedUser == null ||
             !passwordEncoder.matches(password, retrievedUser.password) ||
             retrievedUser.active == 0) // we need that the user is active to login // TODO: change to 0
-            throw LoginException("Login rejected")
+            throw LoginException("login rejected")
         val jwtSecretByteKey = Base64.getDecoder().decode(jwtSecretB64Key)
         val jwtSecretKey: Key = Keys.hmacShaKeyFor(jwtSecretByteKey)
         val accessToken = Jwts.builder()

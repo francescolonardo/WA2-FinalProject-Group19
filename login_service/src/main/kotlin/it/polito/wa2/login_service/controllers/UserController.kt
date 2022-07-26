@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
 import java.util.*
+import kotlin.collections.HashMap
 
 @RestController
 @RequestMapping("/user/")
@@ -28,13 +29,15 @@ class UserController {
      * otherwise, it returns a status code 400 (bad request) and a null body
      */
     @PostMapping("/register")
-    fun userRegistration(@RequestBody userDTO: TravelerDTO): ResponseEntity<ActivationOutputDTO?> {
-        try {
+    fun userRegistration(@RequestBody userDTO: TravelerDTO): ResponseEntity<Any?> {
+        return try {
             val activationOutputDTO = userService.registerTraveler(userDTO.username, userDTO.password, userDTO.email)
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(activationOutputDTO)
+            ResponseEntity.status(HttpStatus.ACCEPTED).body(activationOutputDTO)
         } catch (ex: InvalidUserException) {
             println(ex.localizedMessage)
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
+            val error = HashMap<String, String>()
+            error["error"] = ex.localizedMessage
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error)
         }
     }
 
@@ -47,7 +50,7 @@ class UserController {
      * otherwise, it returns a status code 404 (not found) and a null body
      */
     @PostMapping("/validate")
-    fun userValidation(@RequestBody activationDTO: ActivationDTO): ResponseEntity<TravelerOutputDTO?> {
+    fun userValidation(@RequestBody activationDTO: ActivationDTO): ResponseEntity<Any?> {
         return try {
             val travelerOutputDTO = userService.validateTraveler(
                 activationDTO.provisionalId,
@@ -56,7 +59,9 @@ class UserController {
             ResponseEntity.status(HttpStatus.CREATED).body(travelerOutputDTO)
         } catch (ex: InvalidActivationException) {
             println(ex.localizedMessage)
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
+            val error = HashMap<String, String>()
+            error["error"] = ex.localizedMessage
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error)
         }
     }
 
@@ -77,7 +82,7 @@ class UserController {
             "Email ${userOutputDTO.email} confirmed, user ${userOutputDTO.username} activated!"
         } catch (ex: InvalidActivationException) {
             println(ex.localizedMessage)
-            "Validation error"
+            "Validation error: " + ex.localizedMessage
         }
     }
 
@@ -86,13 +91,15 @@ class UserController {
      *
      */
     @PostMapping("/login")
-    fun userLogin(@RequestBody userLoginDTO: UserLoginDTO): ResponseEntity<AuthorizationTokenDTO> {
+    fun userLogin(@RequestBody userLoginDTO: UserLoginDTO): ResponseEntity<Any?> {
         return try {
             val authorizationTokenDTO = userService.loginUser(userLoginDTO.username, userLoginDTO.password)
             ResponseEntity.ok(authorizationTokenDTO)
         } catch (ex: LoginException) {
             println(ex.localizedMessage)
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
+            val error = HashMap<String, String>()
+            error["error"] = ex.localizedMessage
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error)
         }
     }
 
