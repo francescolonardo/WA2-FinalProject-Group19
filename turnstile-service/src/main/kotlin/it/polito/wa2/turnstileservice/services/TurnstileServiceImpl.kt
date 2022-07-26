@@ -73,29 +73,25 @@ class TurnstileServiceImpl: TurnstileService {
         val ticketJwt: String? = ticketQrDTO.decodeQRCode()
         val jwtUtils = JwtUtils(base64Key)
         val validation = jwtUtils.validateJwt(ticketJwt)
-        if(!validation) {
-            println("Ticket validation error")
+        if(!validation)
             return false
-        }
         else {
             val ticketDTO: TicketDTO = jwtUtils.getDetailsJwtTicket(ticketJwt)
-            if(ticketDTO.used) {
-                println("Ticket already used")
-                return false
-            }
-            turnstileValidationRepository.save(
-                TurnstileValidation().apply {
-                    this.turnstileId = loggedTurnstileId
-                    this.ticketSub = ticketDTO.sub
-                    this.username = ticketDTO.username
-                    this.dateTime = LocalDateTime.now()
-                }
-            )
-
-            return try {
-                setTicketAsUsed(ticketDTO.sub, authorizationHeader)
+            try {
+                val flag = setTicketAsUsed(ticketDTO.sub, authorizationHeader)
+                if(!flag)
+                    return false
+                turnstileValidationRepository.save(
+                    TurnstileValidation().apply {
+                        this.turnstileId = loggedTurnstileId
+                        this.ticketSub = ticketDTO.sub
+                        this.username = ticketDTO.username
+                        this.dateTime = LocalDateTime.now()
+                    }
+                )
+                return true
             }catch(ex: Exception){
-                false
+                return false
             }
         }
     }
