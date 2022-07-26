@@ -9,9 +9,10 @@ data class OrderDTO (
     @JsonProperty("ticket_id") val ticketId: Long,
     @JsonProperty("quantity") val quantity: Int,
     @JsonProperty("status") val status: OrderStatus,
-    @JsonProperty("username") val username: String
+    @JsonProperty("username") val username: String,
+    @JsonProperty ("orderdate") val orderdate: Timestamp? = null,
 )
 
 fun Order.toDTO(): OrderDTO {
-    return OrderDTO(this.id, this.ticketId, this.quantity, this.status, this.username)
+    return OrderDTO(this.id, this.ticketId, this.quantity, this.status, this.username,  this.orderdate)
 }
