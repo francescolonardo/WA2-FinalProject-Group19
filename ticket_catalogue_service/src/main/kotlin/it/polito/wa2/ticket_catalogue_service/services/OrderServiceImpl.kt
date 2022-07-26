@@ -74,7 +74,8 @@ class OrderServiceImpl : OrderService {
                 billingInformationDTO.ticketsQuantity,
                 OrderStatus.PENDING,
                 username,
-                false
+                false,
+                Timestamp(System.currentTimeMillis()) // add time stamp to order 
             )
         )
         kafkaTemplate.send(
