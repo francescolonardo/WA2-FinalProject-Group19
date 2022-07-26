@@ -52,9 +52,10 @@ class TravelerServiceImpl : TravelerService {
             ?.tickets?.map { ticket -> ticket.toDTO() }
     }
 
-    override fun updateProfileByUsername(username: String, address: String, telephoneNumber: String): UserDetailsDTO? {
+    override fun updateProfileByUsername(username: String, dateOfBirth: String, address: String, telephoneNumber: String): UserDetailsDTO? {
         val retrievedProfile = userDetailsRepository.findUserDetailsByUsername(username)
             ?: return null
+        retrievedProfile.dateOfBirth = dateOfBirth
         retrievedProfile.address = address
         retrievedProfile.telephoneNumber = telephoneNumber
         userDetailsRepository.save(retrievedProfile)

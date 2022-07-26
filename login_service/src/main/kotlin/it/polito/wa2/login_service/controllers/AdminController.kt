@@ -31,7 +31,7 @@ class AdminController {
                 adminDTO.password,
                 adminDTO.enrollingCapability
             )
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(adminOutputDTO)
+            return ResponseEntity.status(HttpStatus.CREATED).body(adminOutputDTO)
         } catch (ex: EnrollingCapabilityException) {
             println(ex.localizedMessage)
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null)
@@ -50,7 +50,7 @@ class AdminController {
     ): ResponseEntity<Any> {
         try {
             userService.disableAccountAdmin(loggedUser.name, userId)
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(null)
+            return ResponseEntity.status(HttpStatus.OK).body(null)
         } catch (ex: EnrollingCapabilityException) {
             println(ex.localizedMessage)
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null)

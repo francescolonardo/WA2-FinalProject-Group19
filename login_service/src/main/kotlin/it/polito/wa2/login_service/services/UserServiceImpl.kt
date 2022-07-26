@@ -129,10 +129,13 @@ class UserServiceImpl : UserService {
                 user = newTraveler
             }
         )
+        // TODO: fix this
+        /*
         emailService.sendEmail(
             username, email,
             newActivation.provisionalId.toString(), newActivation.activationCode
         )
+        */
         return ActivationOutputDTO(
             newActivation.provisionalId,
             newActivation.user!!.email
@@ -224,7 +227,11 @@ class UserServiceImpl : UserService {
         userRepository.save(
             User().apply {
                 this.id = retrievedUser!!.id
+                this.username = retrievedUser.username
                 this.password = passwordEncoder.encode(newPassword)
+                this.email = retrievedUser.email
+                this.active = retrievedUser.active
+                this.enrollingCapability = retrievedUser.enrollingCapability
             }
         )
     }
