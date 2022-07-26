@@ -1,6 +1,5 @@
 package it.polito.wa2.traveler_service.entities
 
-import java.util.Date
 import javax.persistence.*
 
 @Entity
@@ -13,7 +12,7 @@ class UserDetails {
     @ElementCollection(targetClass = Role::class, fetch = FetchType.EAGER) // loads all the roles whenever load a user
     @Enumerated(EnumType.STRING)
     var roles: Set<Role> = mutableSetOf()
-    var dateOfBirth: Date? = null
+    var dateOfBirth: String = ""
     var address: String = ""
     var telephoneNumber: String = ""
     @OneToMany

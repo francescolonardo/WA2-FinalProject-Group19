@@ -3,7 +3,6 @@ package it.polito.wa2.traveler_service.dtos
 import com.fasterxml.jackson.annotation.JsonProperty
 import it.polito.wa2.traveler_service.entities.Role
 import it.polito.wa2.traveler_service.entities.UserDetails
-import java.util.*
 
 data class UserDetailsDTO(
     @JsonProperty("username")
@@ -11,7 +10,7 @@ data class UserDetailsDTO(
     @JsonProperty("roles")
     val roles: Set<Role> = mutableSetOf(),
     @JsonProperty("date_of_birth")
-    val dateOfBirth: Date? = null,
+    val dateOfBirth: String = "",
     @JsonProperty("address")
     var address: String = "",
     @JsonProperty("telephone_number")

@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import java.lang.Integer.parseInt
+import java.text.SimpleDateFormat
+import java.util.Date
 
 @RestController
 @RequestMapping("/my/")
@@ -25,7 +27,11 @@ class CustomerController {
 
     @PutMapping("/profile")
     fun putProfile(@RequestBody userDetailsInputDTO: UserDetailsInputDTO): ResponseEntity<UserDetailsDTO?> {
+        val dateOfBirthString: String
         try {
+            val dateFormatter = SimpleDateFormat("dd/MM/yyyy")
+            val dateOfBirth = dateFormatter.parse(userDetailsInputDTO.dateOfBirth)
+            dateOfBirthString = dateFormatter.format(dateOfBirth)
             parseInt(userDetailsInputDTO.telephoneNumber)
             if (userDetailsInputDTO.telephoneNumber.length < 9 ||
                 userDetailsInputDTO.telephoneNumber.length > 10)
@@ -38,6 +44,7 @@ class CustomerController {
         val loggedUsername: String = SecurityContextHolder.getContext().authentication.name
         val updatedProfile = travelerService.updateProfileByUsername(
             loggedUsername,
+            dateOfBirthString,
             userDetailsInputDTO.address,
             userDetailsInputDTO.telephoneNumber
         )
