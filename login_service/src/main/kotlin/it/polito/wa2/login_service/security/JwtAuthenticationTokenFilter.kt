@@ -1,5 +1,6 @@
 package it.polito.wa2.login_service.security
 
+import it.polito.wa2.login_service.dtos.JwtSubjectInfoDTO
 import org.springframework.web.filter.OncePerRequestFilter
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -35,12 +36,13 @@ class JwtAuthenticationTokenFilter(
             return
         }
 
-        val userRoles: UserRoles = jwtUtils.getDetailsJwt(authorizationToken)
+        val jwtSubjectInfoDTO: JwtSubjectInfoDTO = jwtUtils.getDetailsJwt(authorizationToken)
         var authorities: Collection<SimpleGrantedAuthority> = ArrayList()
-        userRoles.roles.forEach { role ->
+        jwtSubjectInfoDTO.roles.forEach { role ->
             authorities += SimpleGrantedAuthority(role.toString())
         }
-        val authentication = UsernamePasswordAuthenticationToken(userRoles.username, null, authorities)
+        val authentication = UsernamePasswordAuthenticationToken(jwtSubjectInfoDTO.username, null, authorities)
+        //authentication.details = WebAuthenticationDetailsSource().buildDetails(request) // TODO: remove this (?)
         SecurityContextHolder.getContext().authentication = authentication
 
         filterChain.doFilter(request, response) // lets the request continues its course
