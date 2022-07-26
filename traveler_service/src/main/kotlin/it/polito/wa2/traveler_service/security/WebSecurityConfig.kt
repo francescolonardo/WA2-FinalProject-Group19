@@ -13,14 +13,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 class WebSecurityConfig : WebSecurityConfigurerAdapter() {
     @Value("\${jwt.authorization.signature-key-base64}")
-    private lateinit var base64Key: String
+    private lateinit var jwtSecretB64Key: String
     @Value("\${jwt.authorization.http-header-name}")
     private lateinit var jwtHttpHeaderName: String
     @Value("\${jwt.authorization.http-header-prefix}")
     private lateinit var jwtHttpHeaderPrefix: String
 
     override fun configure(http: HttpSecurity) {
-        val jwtAuthenticationTokenFilter = JwtAuthenticationTokenFilter(base64Key, jwtHttpHeaderName, jwtHttpHeaderPrefix)
+        val jwtAuthFilter = JwtAuthFilter(jwtSecretB64Key, jwtHttpHeaderName, jwtHttpHeaderPrefix)
 
         http.csrf().disable() // disable cross site request forgery
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // to use JWT instead of the default stateful session policy (cookie)
@@ -34,12 +34,11 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
             .antMatchers(HttpMethod.GET,"/admin/travelers").hasAuthority("ADMIN")
             .antMatchers(HttpMethod.GET,"/admin/traveler/**/profile").hasAuthority("ADMIN")
             .antMatchers(HttpMethod.GET,"/admin/traveler/**/tickets").hasAuthority("ADMIN")
-            .antMatchers(HttpMethod.PUT,"/my/tickets/**/validate").hasAuthority("ADMIN")
             .antMatchers(HttpMethod.PUT,"/embedded/**").hasAuthority("EMBEDDED")
 
         http.authorizeRequests()
             .anyRequest().authenticated() // allows only authenticated users to be able to access the remaining paths
 
-        http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter::class.java)
+        http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter::class.java)
     }
 }

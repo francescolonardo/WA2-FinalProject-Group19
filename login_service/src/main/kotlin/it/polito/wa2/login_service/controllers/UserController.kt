@@ -26,9 +26,9 @@ class UserController {
      * otherwise, it returns a status code 400 (bad request) and a null body
      */
     @PostMapping("/register")
-    fun userRegistration(@RequestBody userDTO: UserDTO): ResponseEntity<ActivationOutputDTO?> {
+    fun userRegistration(@RequestBody userDTO: TravelerDTO): ResponseEntity<ActivationOutputDTO?> {
         try {
-            val activationOutputDTO = userService.registerUser(userDTO.username, userDTO.password, userDTO.email)
+            val activationOutputDTO = userService.registerTraveler(userDTO.username, userDTO.password, userDTO.email)
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(activationOutputDTO)
         } catch (ex: InvalidUserException) {
             println(ex.localizedMessage)
@@ -44,12 +44,14 @@ class UserController {
      * the activated existing user's id, username, email
      * otherwise, it returns a status code 404 (not found) and a null body
      */
-    // FIXME: handle HttpMessageNotReadableException (submitting an improperly formatted UUID)
     @PostMapping("/validate")
-    fun userValidationPost(@RequestBody activationDTO: ActivationDTO): ResponseEntity<UserOutputDTO?> {
+    fun userValidationPost(@RequestBody activationDTO: ActivationDTO): ResponseEntity<TravelerOutputDTO?> {
         try {
-            val userOutputDTO = userService.validateUser(activationDTO.provisionalId, activationDTO.activationCode)
-            return ResponseEntity.status(HttpStatus.CREATED).body(userOutputDTO)
+            val travelerOutputDTO = userService.validateTraveler(
+                activationDTO.provisionalId,
+                activationDTO.activationCode
+            )
+            return ResponseEntity.status(HttpStatus.CREATED).body(travelerOutputDTO)
         } catch (ex: InvalidActivationException) {
             println(ex.localizedMessage)
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
@@ -69,7 +71,7 @@ class UserController {
         @RequestParam("activation_code") activationCode: String
     ): String {
         try {
-            val userOutputDTO = userService.validateUser(provisionalId, activationCode)
+            val userOutputDTO = userService.validateTraveler(provisionalId, activationCode)
             return "Email ${userOutputDTO.email} confirmed, user ${userOutputDTO.username} activated!"
         } catch (ex: InvalidActivationException) {
             println(ex.localizedMessage)
