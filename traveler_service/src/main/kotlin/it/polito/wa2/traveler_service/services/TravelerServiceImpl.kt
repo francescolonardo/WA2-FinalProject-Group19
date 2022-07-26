@@ -13,6 +13,7 @@ import it.polito.wa2.traveler_service.repositories.UserDetailsRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import org.springframework.data.repository.findByIdOrNull
 import java.security.Key
 import java.sql.Timestamp
 import java.util.*
@@ -23,6 +24,8 @@ class TravelerServiceImpl : TravelerService {
     private lateinit var userDetailsRepository: UserDetailsRepository
     @Autowired
     private lateinit var ticketPurchasedRepository: TicketPurchasedRepository
+    @Autowired
+    private lateinit var qrCodeService: QRCodeServiceImpl
 
     @Value("\${jwt.tickets.signature-key-base64}")
     private lateinit var jwtSecretB64Key: String
@@ -44,12 +47,18 @@ class TravelerServiceImpl : TravelerService {
 
     override fun getTicketsById(id: Long): List<TicketPurchasedDTO>? {
         return userDetailsRepository.findUserDetailsById(id)
-            ?.tickets?.map { ticket -> ticket.toDTO() }
+            ?.tickets?.map { ticket ->
+                val qrcode = qrCodeService.generateQRCode(ticket.jws)
+                ticket.toDTO(qrcode)
+            }
     }
 
     override fun getTicketsByUsername(username: String): List<TicketPurchasedDTO>? {
         return userDetailsRepository.findUserDetailsByUsername(username)
-            ?.tickets?.map { ticket -> ticket.toDTO() }
+            ?.tickets?.map { ticket ->
+                val qrcode = qrCodeService.generateQRCode(ticket.jws)
+                ticket.toDTO(qrcode)
+            }
     }
 
     override fun updateProfileByUsername(username: String, dateOfBirth: String, address: String, telephoneNumber: String): UserDetailsDTO? {
@@ -61,6 +70,21 @@ class TravelerServiceImpl : TravelerService {
         userDetailsRepository.save(retrievedProfile)
         return retrievedProfile.toDTO()
     }
+    
+    
+    override fun getTicketDetailById(id: Long): TicketPurchased? {
+        return ticketPurchasedRepository.findByIdOrNull(id)
+    }
+
+    override fun updateUsedPropertyById(ticket: TicketPurchased): Boolean {
+        if(!ticket.used)
+        {
+            ticket.used = true
+            ticketPurchasedRepository.save(ticket)
+            return true
+        }
+        return false
+    }
 
     override fun purchaseTicketsByUsername(username: String, quantity: Int, zones: String): List<TicketPurchasedDTO>? {
         val retrievedProfile = userDetailsRepository.findUserDetailsByUsername(username)
@@ -68,7 +92,10 @@ class TravelerServiceImpl : TravelerService {
         val createdTickets = createTickets(username, quantity, zones)
         retrievedProfile.tickets += createdTickets
         userDetailsRepository.save(retrievedProfile)
-        return createdTickets.map { createdTicket -> createdTicket.toDTO() }
+        return createdTickets.map { createdTicket ->
+            val qrcode = qrCodeService.generateQRCode(createdTicket.jws)
+            createdTicket.toDTO(qrcode)
+        }
     }
 
     fun createTickets(username: String, quantity: Int, zones: String): List<TicketPurchased> {

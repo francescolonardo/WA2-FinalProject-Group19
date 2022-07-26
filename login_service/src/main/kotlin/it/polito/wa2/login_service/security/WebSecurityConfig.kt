@@ -52,6 +52,8 @@ class WebSecurityConfig: WebSecurityConfigurerAdapter() {
             .antMatchers(HttpMethod.DELETE,"/user/deleteAccount").hasAuthority("CUSTOMER")
             .antMatchers(HttpMethod.POST,"/admin/enrolling").hasAuthority("ADMIN")
             .antMatchers(HttpMethod.GET,"/admin/disableAccount/**").hasAuthority("ADMIN")
+            .antMatchers(HttpMethod.POST,"/turnstile/token").permitAll()
+            .antMatchers(HttpMethod.POST,"/turnstile/register").hasAuthority("ADMIN")
             .anyRequest().authenticated() // allows only authenticated users to be able to access the remaining paths
 
         http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter::class.java)

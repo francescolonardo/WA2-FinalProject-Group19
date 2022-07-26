@@ -13,4 +13,5 @@ class TicketPurchased {
     var zid: String = ""
     var username: String = ""
     var jws: String = ""
+    var used: Boolean = false
 }
