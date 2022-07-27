@@ -97,9 +97,8 @@ class OrderServiceImpl : OrderService {
     override suspend fun getOrderByIdAndUsername(orderId: Long, username: String, authorizationHeader: String): OrderDTO? {
         val order = orderRepository.findByIdAndUsername(orderId, username)
             ?: throw OrderNotFoundException("Order not found with orderId=${orderId}, username=${username}")
-        val ticket = ticketRepository.findById(order.ticketId)
         if (!order.purchased && order.status == OrderStatus.COMPLETED) {
-            buyOrderedTickets(order.quantity, ticket!!.validityZones, authorizationHeader)
+            buyOrderedTickets(order.quantity, authorizationHeader)
             order.purchased = true
             order.orderdate = Timestamp(System.currentTimeMillis())
             orderRepository.save(order)
@@ -117,21 +116,17 @@ class OrderServiceImpl : OrderService {
             .map { order -> order.toDTO() }
     }
 
-
-    override fun getAllOrdersByDate(start : Timestamp, end : Timestamp) : Flow<OrderDTO>{
+    override suspend fun getAllOrdersByDate(start : Timestamp, end : Timestamp) : Flow<OrderDTO>{
         return orderRepository.findAllOrdersByDate(start, end)
             .map{order -> order.toDTO()}
     }
 
-    override fun getAllUserOrdersByDate (start : Timestamp, end : Timestamp, username: String) : Flow<OrderDTO>
+    override suspend fun getAllUserOrdersByDate (start : Timestamp, end : Timestamp, userId: Long, authorizationHeader: String ) : Flow<OrderDTO>
     {
+        val username = retrieveUsernameByUserId(userId, authorizationHeader)
         return orderRepository.findAllUserOrdersByDate(start,end,username)
             .map{order -> order.toDTO()}
     }
-
-
-
-
 
     private suspend fun retrieveUsernameByUserId(userId: Long, authorizationHeader: String): String {
         val userProfile: UserDetailsDTO = travelerWebClient
@@ -153,11 +148,11 @@ class OrderServiceImpl : OrderService {
             .map { order -> order.toDTO() }
     }
 
-    suspend fun buyOrderedTickets(ticketsQuantity: Int, ticketValidityZones: String, authorizationHeader: String) {
+    suspend fun buyOrderedTickets(ticketsQuantity: Int, authorizationHeader: String) {
         val buyTicketsRequestDTO = BuyTicketsRequestDTO(
             "buy_tickets",
             ticketsQuantity,
-            ticketValidityZones
+            "ABC" // TODO: change this
         )
         val boughtOrderedTickets: List<TicketPurchasedDTO> = travelerWebClient
             .post()
