@@ -40,6 +40,7 @@ class JwtUtils(base64Key: String) {
         rolesString.map { roleString ->
             roles += when (roleString) {
                 "CUSTOMER" -> Role.CUSTOMER
+                "EMBEDDED" -> Role.EMBEDDED
                 else -> Role.ADMIN
             }
         }
