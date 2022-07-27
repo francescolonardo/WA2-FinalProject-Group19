@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.springframework.boot") version "2.7.2"
-    id("io.spring.dependency-management") version "1.0.12.RELEASE"
+    id("org.springframework.boot") version "2.7.1"
+    id("io.spring.dependency-management") version "1.0.11.RELEASE"
     kotlin("jvm") version "1.6.21"
     kotlin("plugin.spring") version "1.6.21"
 }
@@ -16,7 +16,6 @@ repositories {
 }
 
 dependencies {
-
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
@@ -26,27 +25,17 @@ dependencies {
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.4")
-
     implementation("io.r2dbc:r2dbc-postgresql:0.8.12.RELEASE")
-
-    //JWT dependencies
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
-
-
-    //QR dependencies
     implementation("com.google.zxing:core:3.5.0")
     implementation("com.google.zxing:javase:3.5.0")
-
-    //R2DBC
     runtimeOnly("io.r2dbc:r2dbc-postgresql")
     runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("com.h2database:h2")
-
 }
 
 tasks.withType<KotlinCompile> {

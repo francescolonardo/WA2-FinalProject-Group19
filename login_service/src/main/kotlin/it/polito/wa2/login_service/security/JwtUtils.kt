@@ -15,16 +15,11 @@ class JwtUtils(base64Key: String) {
         signatureKey = Keys.hmacShaKeyFor(byteKey)
     }
 
-    fun validateJwt(authToken: String): Boolean {
-        try {
-            val decodedJwt = Jwts.parserBuilder()
-                .setSigningKey(signatureKey)
-                .build()
-                .parseClaimsJws(authToken)
-        } catch (ex: Throwable) {
-            ex.printStackTrace() // TODO: remove this (?)
-            return false
-        }
+    fun validateJwt(authToken: String): Any {
+        Jwts.parserBuilder()
+            .setSigningKey(signatureKey)
+            .build()
+            .parseClaimsJws(authToken)
         return true
     }
 
