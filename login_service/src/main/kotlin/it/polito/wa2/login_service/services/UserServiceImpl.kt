@@ -292,4 +292,24 @@ class UserServiceImpl : UserService {
             throw DisableAccountException("logged user account can't be disabled")
         userRepository.deactivateById(userId)
     }
+
+    // TODO: remove this
+    fun addTraveler(
+        username: String,
+        password: String,
+        email: String,
+        active: Int,
+        role: Role
+    ){
+        userRepository.save(
+            User().apply {
+                this.username = username
+                this.password = passwordEncoder.encode(password)
+                this.email = email
+                this.active = active
+                this.roles = setOf(role)
+                this.enrollingCapability = 0
+            }
+        )
+    }
 }

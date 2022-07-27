@@ -57,7 +57,7 @@ class CustomerController {
         return ResponseEntity.ok().body(updatedProfile)
     }
 
-    @GetMapping("/tickets", produces = [MediaType.APPLICATION_NDJSON_VALUE])
+    @GetMapping("/tickets")
     fun getTickets(
         @RequestHeader("Authorization") authorizationHeader: String,
         loggedUser: Principal
@@ -67,7 +67,7 @@ class CustomerController {
         return ResponseEntity.ok().body(retrievedTickets)
     }
 
-    @PostMapping("/tickets", produces = [MediaType.APPLICATION_NDJSON_VALUE])
+    @PostMapping("/tickets")
     fun postTickets(
         @RequestBody buyTicketsDTO: BuyTicketsRequestDTO,
         @RequestHeader("Authorization") authorizationHeader: String,

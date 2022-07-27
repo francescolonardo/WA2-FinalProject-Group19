@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.sql.Timestamp
 
-
 @RestController
 @RequestMapping("/admin")
 class AdminController {
@@ -46,6 +45,7 @@ class AdminController {
         return ResponseEntity.ok(retrievedOrders)
     }
 
+    /*
     @GetMapping("/orders/date", produces = [MediaType.APPLICATION_NDJSON_VALUE])
     @ResponseBody
     suspend fun getAllOrdersByDate(
@@ -68,4 +68,5 @@ class AdminController {
         val retrievedOrders = orderService.getAllUserOrdersByDate(start,end,userId,authorizationHeader)
         return ResponseEntity.ok(retrievedOrders)
     }
+    */
 }

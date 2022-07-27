@@ -7,24 +7,24 @@ import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 import java.sql.Timestamp
-import java.util.*
 
 @Repository
 interface OrderRepository : CoroutineCrudRepository<Order, Long> {
     fun findByUsername(username: String): Flow<Order>
     suspend fun findByIdAndUsername(orderId: Long, username: String): Order?
 
-    @Query("SELECT all FROM Order o WHERE o.orderdate  > :start and  o.orderdate  < :end ")
+    /*
+    @Query("SELECT all FROM Order o WHERE o.timestamp_  > :start and  o.timestamp_  < :end ")
     fun findAllOrdersByDate(
         @Param("start") start: Timestamp?,
         @Param("end") end: Timestamp?
     ): Flow<Order>
 
-
-    @Query("SELECT all FROM Order o WHERE o.username = :username and o.orderdate  > :start and  o.orderdate  < :end ")
+    @Query("SELECT all FROM Order o WHERE o.username = :username and o.timestamp_  > :start and  o.timestamp_  < :end ")
     fun findAllUserOrdersByDate(
         @Param("start") start: Timestamp?,
         @Param("end") end: Timestamp?,
         username: String
     ): Flow<Order>
+     */
 }

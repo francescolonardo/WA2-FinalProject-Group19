@@ -11,15 +11,26 @@ import org.springframework.context.annotation.Bean
 
 @SpringBootApplication(exclude = [SecurityAutoConfiguration::class])
 class TravelerServiceApplication {
-	// TODO: remove these
 	@Autowired
 	private lateinit var travelerService: TravelerServiceImpl
 
 	@Bean
 	fun run(): CommandLineRunner {
 		return CommandLineRunner {
-			travelerService.addUserDetails("john", Role.CUSTOMER)
-			travelerService.addUserDetails("jim", Role.ADMIN)
+			travelerService.addUserDetails(
+				"john",
+				"address 123",
+				"31/12/1999",
+				"0123456789",
+				Role.CUSTOMER
+			)
+			travelerService.addUserDetails(
+				"jimmy",
+				"address 321",
+				"01/01/2000",
+				"9876543210",
+				Role.CUSTOMER
+			)
 		}
 	}
 }

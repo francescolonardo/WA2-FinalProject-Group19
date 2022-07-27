@@ -1,5 +1,6 @@
 package it.polito.wa2.login_service
 
+import it.polito.wa2.login_service.entities.Role
 import it.polito.wa2.login_service.services.UserServiceImpl
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -29,6 +30,20 @@ class LoginServiceApplication {
                 adminDefaultUsername,
                 adminDefaultPassword,
                 adminDefaultEnrollingCapability
+            )
+            userService.addTraveler(
+                "john",
+                "John123@",
+                "john@gmail.com",
+                1,
+                Role.CUSTOMER
+            )
+            userService.addTraveler(
+                "jimmy",
+                "Jimmy123@",
+                "jimmy@gmail.com",
+                1,
+                Role.CUSTOMER
             )
         }
     }

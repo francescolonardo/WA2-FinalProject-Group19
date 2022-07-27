@@ -127,10 +127,21 @@ class TravelerServiceImpl : TravelerService {
     }
 
     // TODO: remove this
-    fun addUserDetails(username: String, role: Role){
-        val user = UserDetails()
-        user.username = username
-        user.roles = setOf(role)
-        userDetailsRepository.save(user)
+    fun addUserDetails(
+        username: String,
+        address: String,
+        dateOfBirth: String,
+        telephoneNumber: String,
+        role: Role
+    ){
+        userDetailsRepository.save(
+            UserDetails().apply {
+                this.username = username
+                this.address = address
+                this.dateOfBirth = dateOfBirth
+                this.telephoneNumber = telephoneNumber
+                this.roles = setOf(role)
+            }
+        )
     }
 }

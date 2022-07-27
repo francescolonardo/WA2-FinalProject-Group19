@@ -15,7 +15,7 @@ class AdminController {
     @Autowired
     private lateinit var travelerService: TravelerServiceImpl
 
-    @GetMapping("/travelers", produces = [MediaType.APPLICATION_NDJSON_VALUE])
+    @GetMapping("/travelers")
     fun getTravelers(
         @RequestHeader("Authorization") authorizationHeader: String
     ): ResponseEntity<List<UserDetailsDTO>?> {
@@ -34,7 +34,7 @@ class AdminController {
         return ResponseEntity.ok().body(retrievedProfile)
     }
 
-    @GetMapping("/traveler/{userId}/tickets", produces = [MediaType.APPLICATION_NDJSON_VALUE])
+    @GetMapping("/traveler/{userId}/tickets")
     fun getTickets(
         @RequestHeader("Authorization") authorizationHeader: String,
         @PathVariable("userId") userId: Long

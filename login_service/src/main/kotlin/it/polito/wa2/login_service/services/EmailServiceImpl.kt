@@ -15,9 +15,8 @@ class EmailServiceImpl : EmailService {
 
     @Value("\${server.port}")
     private lateinit var serverPort: String
-
-    //private val fromEmail = "noreply@ticketservice.com"
-    private val fromEmail = "wa2.group19@gmail.com"
+    @Value("\${spring.mail.username}")
+    private lateinit var fromEmail: String
     private val emailSubject = "Confirmation instructions"
 
     private fun getEmailBody(username: String, provisionalId: String, activationCode: String): String {

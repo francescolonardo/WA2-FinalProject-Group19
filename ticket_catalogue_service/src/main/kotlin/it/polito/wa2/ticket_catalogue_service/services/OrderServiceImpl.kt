@@ -41,10 +41,10 @@ class OrderServiceImpl : OrderService {
     private lateinit var kafkaTemplate: KafkaTemplate<String, Any>
 
     override suspend fun addNewOrder(
-        billingInformationDTO: BillingInformationDTO,
         username: String,
+        billingInformationDTO: BillingInformationDTO,
         authorizationHeader: String
-    ) : Long? {
+    ): Long? {
         val ticket = ticketRepository.findById(billingInformationDTO.ticketId)
             ?: throw TicketNotFoundException("Ticket not found with ticketId=${billingInformationDTO.ticketId}")
         if (ticket.minAge != null || ticket.maxAge != null) {
@@ -57,14 +57,21 @@ class OrderServiceImpl : OrderService {
                     resp.bodyToMono(String::class.java).map { Exception(it) }
                 }
                 .awaitBody()
-
+            // TODO: fix this (returned just the username)
+            /*
+            println(userProfile.username)
+            println(userProfile.telephoneNumber)
+            println(userProfile.dateOfBirth)
+            return null
             val birthDate = userProfile.dateOfBirth!!
                 .toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
             val age = Period.between(birthDate, LocalDate.now()).years
+            println("TEST $age")
             if (ticket.minAge != null && ticket.minAge > age)
                 return null
             if (ticket.maxAge != null && ticket.maxAge < age)
                 return null
+             */
         }
         val newOrder = orderRepository.save(
             Order(
@@ -74,7 +81,7 @@ class OrderServiceImpl : OrderService {
                 OrderStatus.PENDING,
                 username,
                 false,
-                Timestamp(System.currentTimeMillis()) // add time stamp to order
+                Timestamp(System.currentTimeMillis())
             )
         )
         kafkaTemplate.send(
@@ -99,7 +106,7 @@ class OrderServiceImpl : OrderService {
         if (!order.purchased && order.status == OrderStatus.COMPLETED) {
             buyOrderedTickets(order.quantity, ticket!!.validityZones, authorizationHeader)
             order.purchased = true
-            order.orderdate = Timestamp(System.currentTimeMillis())
+            order.timestamp = Timestamp(System.currentTimeMillis())
             orderRepository.save(order)
         }
         return order.toDTO()
@@ -115,17 +122,19 @@ class OrderServiceImpl : OrderService {
             .map { order -> order.toDTO() }
     }
 
-    override suspend fun getAllOrdersByDate(start : Timestamp, end : Timestamp) : Flow<OrderDTO>{
+    /*
+    override suspend fun getAllOrdersByDate(start: Timestamp, end: Timestamp): Flow<OrderDTO> {
         return orderRepository.findAllOrdersByDate(start, end)
             .map{order -> order.toDTO()}
     }
 
-    override suspend fun getAllUserOrdersByDate (start : Timestamp, end : Timestamp, userId: Long, authorizationHeader: String ) : Flow<OrderDTO>
+    override suspend fun getAllUserOrdersByDate(start: Timestamp, end: Timestamp, userId: Long, authorizationHeader: String): Flow<OrderDTO>
     {
         val username = retrieveUsernameByUserId(userId, authorizationHeader)
-        return orderRepository.findAllUserOrdersByDate(start,end,username)
+        return orderRepository.findAllUserOrdersByDate(start, end, username)
             .map{order -> order.toDTO()}
     }
+     */
 
     private suspend fun retrieveUsernameByUserId(userId: Long, authorizationHeader: String): String {
         val userProfile: UserDetailsDTO = travelerWebClient

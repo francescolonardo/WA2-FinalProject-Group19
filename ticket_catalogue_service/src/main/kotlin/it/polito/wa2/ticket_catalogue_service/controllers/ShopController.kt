@@ -27,7 +27,11 @@ class ShopController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
         return try {
             val orderId = HashMap<String, Long>()
-            orderId["orderId"] = orderService.addNewOrder(billingInformationDTO, loggedUser.name, authorizationHeader)
+            orderId["orderId"] = orderService.addNewOrder(
+                loggedUser.name,
+                billingInformationDTO,
+                authorizationHeader
+            )
                 ?: return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
             return ResponseEntity.ok(orderId)
         } catch (ex: TicketNotFoundException) {
