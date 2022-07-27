@@ -117,6 +117,22 @@ class OrderServiceImpl : OrderService {
             .map { order -> order.toDTO() }
     }
 
+
+    override fun getAllOrdersByDate(start : Timestamp, end : Timestamp) : Flow<OrderDTO>{
+        return orderRepository.findAllOrdersByDate(start, end)
+            .map{order -> order.toDTO()}
+    }
+
+    override fun getAllUserOrdersByDate (start : Timestamp, end : Timestamp, username: String) : Flow<OrderDTO>
+    {
+        return orderRepository.findAllUserOrdersByDate(start,end,username)
+            .map{order -> order.toDTO()}
+    }
+
+
+
+
+
     private suspend fun retrieveUsernameByUserId(userId: Long, authorizationHeader: String): String {
         val userProfile: UserDetailsDTO = travelerWebClient
             .get()
