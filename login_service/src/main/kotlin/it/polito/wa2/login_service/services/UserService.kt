@@ -10,5 +10,6 @@ interface UserService {
     fun changePasswordUser(username: String, oldPassword: String, newPassword: String)
     fun deleteAccountTraveler(username: String)
     fun enrollAdmin(loggedUsername: String, newAdminUsername: String, newAdminPassword: String, newAdminEnrollingCapability: Int): AdminOutputDTO
+    fun enrollDefaultAdmin(newAdminUsername: String, newAdminPassword: String, newAdminEnrollingCapability: Int)
     fun disableAccountAdmin(username: String, userId: Long)
 }

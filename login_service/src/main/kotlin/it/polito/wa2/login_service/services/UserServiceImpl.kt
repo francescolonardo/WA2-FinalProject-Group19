@@ -264,6 +264,23 @@ class UserServiceImpl : UserService {
         )
     }
 
+    override fun enrollDefaultAdmin(
+        newAdminUsername: String,
+        newAdminPassword: String,
+        newAdminEnrollingCapability: Int
+    ) {
+        checkAdminCredentials(newAdminUsername, newAdminPassword)
+        userRepository.save(
+            User().apply {
+                this.username = newAdminUsername
+                this.password = passwordEncoder.encode(newAdminPassword)
+                this.active = 1
+                roles = mutableSetOf(Role.ADMIN)
+                this.enrollingCapability = newAdminEnrollingCapability
+            }
+        )
+    }
+
     override fun disableAccountAdmin(username: String, userId: Long) {
         val retrievedAdmin = userRepository.findByUsername(username)
         if (retrievedAdmin?.enrollingCapability == 0)

@@ -25,7 +25,7 @@ class LoginServiceApplication {
     @Bean
     fun run(): CommandLineRunner {
         return CommandLineRunner {
-            userService.enrollAdmin(
+            userService.enrollDefaultAdmin(
                 adminDefaultUsername,
                 adminDefaultPassword,
                 adminDefaultEnrollingCapability
