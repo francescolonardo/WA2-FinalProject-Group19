@@ -50,10 +50,10 @@ class AdminController {
     @ResponseBody
     suspend fun getAllOrdersByDate(
         @RequestParam start: Timestamp,
-        @RequestParam end : Timestamp 
+        @RequestParam end : Timestamp,
+        @RequestHeader("Authorization") authorizationHeader: String
     ): ResponseEntity<Flow<OrderDTO>> {
-
-        val retrievedOrders = orderService.getAllOrdersByDate(start,end)
+        val retrievedOrders = orderService.getAllOrdersByDate(start, end)
         return ResponseEntity.ok(retrievedOrders)
     }
 

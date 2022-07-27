@@ -6,10 +6,7 @@ import it.polito.wa2.login_service.services.TurnstileService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/turnstile/")
@@ -18,11 +15,14 @@ class TurnstileController {
     private lateinit var turnstileService: TurnstileService
 
     @PostMapping("/register")
-    fun registerTurnstile(@RequestBody turnstileDTO: TurnstileDTO): ResponseEntity<TurnstileOutputDTO> {
+    fun registerTurnstile(
+        @RequestBody turnstileDTO: TurnstileDTO,
+        @RequestHeader("Authorization") authorizationHeader: String
+    ): ResponseEntity<TurnstileOutputDTO> {
         return try {
             val turnstileOutputDTO = turnstileService.registerTurnstile(turnstileDTO.secret)
             ResponseEntity.status(HttpStatus.CREATED).body(turnstileOutputDTO)
-        }catch (ex: Exception){
+        } catch (ex: Exception){
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
         }
     }
@@ -34,7 +34,7 @@ class TurnstileController {
             val map = HashMap<String, String>()
             map["token"] = token
             ResponseEntity.status(HttpStatus.OK).body(map)
-        }catch (ex: Exception){
+        } catch (ex: Exception){
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
         }
     }

@@ -4,12 +4,12 @@ import it.polito.wa2.traveler_service.dtos.*
 import it.polito.wa2.traveler_service.services.TravelerServiceImpl
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import java.lang.Integer.parseInt
+import java.security.Principal
 import java.text.SimpleDateFormat
-import java.util.Date
 
 @RestController
 @RequestMapping("/my/")
@@ -18,15 +18,21 @@ class CustomerController {
     private lateinit var travelerService: TravelerServiceImpl
 
     @GetMapping("/profile")
-    fun getProfile(): ResponseEntity<UserDetailsDTO?> {
-        val loggedUsername: String = SecurityContextHolder.getContext().authentication.name
-        val retrievedProfile = travelerService.getProfileByUsername(loggedUsername)
+    fun getProfile(
+        @RequestHeader("Authorization") authorizationHeader: String,
+        loggedUser: Principal
+    ): ResponseEntity<UserDetailsDTO?> {
+        val retrievedProfile = travelerService.getProfileByUsername(loggedUser.name)
             ?: return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
         return ResponseEntity.ok().body(retrievedProfile)
     }
 
     @PutMapping("/profile")
-    fun putProfile(@RequestBody userDetailsInputDTO: UserDetailsInputDTO): ResponseEntity<UserDetailsDTO?> {
+    fun putProfile(
+        @RequestBody userDetailsInputDTO: UserDetailsInputDTO,
+        @RequestHeader("Authorization") authorizationHeader: String,
+        loggedUser: Principal
+    ): ResponseEntity<UserDetailsDTO?> {
         val dateOfBirthString: String
         try {
             val dateFormatter = SimpleDateFormat("dd/MM/yyyy")
@@ -41,9 +47,8 @@ class CustomerController {
         } catch (e: Exception) {
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(null)
         }
-        val loggedUsername: String = SecurityContextHolder.getContext().authentication.name
         val updatedProfile = travelerService.updateProfileByUsername(
-            loggedUsername,
+            loggedUser.name,
             dateOfBirthString,
             userDetailsInputDTO.address,
             userDetailsInputDTO.telephoneNumber
@@ -52,16 +57,22 @@ class CustomerController {
         return ResponseEntity.ok().body(updatedProfile)
     }
 
-    @GetMapping("/tickets")
-    fun getTickets(): ResponseEntity<List<TicketPurchasedDTO?>> {
-        val loggedUsername: String = SecurityContextHolder.getContext().authentication.name
-        val retrievedTickets = travelerService.getTicketsByUsername(loggedUsername)
+    @GetMapping("/tickets", produces = [MediaType.APPLICATION_NDJSON_VALUE])
+    fun getTickets(
+        @RequestHeader("Authorization") authorizationHeader: String,
+        loggedUser: Principal
+    ): ResponseEntity<List<TicketPurchasedDTO?>> {
+        val retrievedTickets = travelerService.getTicketsByUsername(loggedUser.name)
             ?: return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
         return ResponseEntity.ok().body(retrievedTickets)
     }
 
-    @PostMapping("/tickets")
-    fun postTickets(@RequestBody buyTicketsDTO: BuyTicketsRequestDTO): ResponseEntity<List<TicketPurchasedDTO?>> {
+    @PostMapping("/tickets", produces = [MediaType.APPLICATION_NDJSON_VALUE])
+    fun postTickets(
+        @RequestBody buyTicketsDTO: BuyTicketsRequestDTO,
+        @RequestHeader("Authorization") authorizationHeader: String,
+        loggedUser: Principal
+    ): ResponseEntity<List<TicketPurchasedDTO?>> {
         if (buyTicketsDTO.cmd != "buy_tickets" ||
             buyTicketsDTO.quantity < 1 ||
             buyTicketsDTO.zones.isEmpty() ||
@@ -79,9 +90,8 @@ class CustomerController {
                 return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(null)
             }
         }
-        val loggedUsername: String = SecurityContextHolder.getContext().authentication.name
         val purchasedTickets = travelerService.purchaseTicketsByUsername(
-            loggedUsername,
+            loggedUser.name,
             buyTicketsDTO.quantity,
             buyTicketsDTO.zones
         )

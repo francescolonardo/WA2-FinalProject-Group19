@@ -10,10 +10,8 @@ import java.security.Principal
 @RestController
 @RequestMapping("/turnstile/")
 class TurnstileController {
-
     @Autowired
     lateinit var turnstileService: TurnstileService
-
 
     @PostMapping("/validate")
     suspend fun validateTicketPost(
@@ -27,13 +25,11 @@ class TurnstileController {
             ResponseEntity.ok(true)
     }
 
-
-
     @PostMapping("/generateQR")
     suspend fun generateQrFromTicketPost(
-        @RequestBody ticketQR: TicketQrDTO
+        @RequestBody ticketQR: TicketQrDTO,
+        @RequestHeader("Authorization") authorizationHeader: String
     ): ResponseEntity<String> {
         return ResponseEntity.ok(TicketQrDTO(ticketQR.qrCode).generateQRCode())
     }
-
 }

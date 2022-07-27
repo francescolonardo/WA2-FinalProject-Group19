@@ -17,21 +17,21 @@ import java.time.format.DateTimeFormatter
 @RestController
 @RequestMapping("/admin/")
 class AdminController {
-
     @Autowired
     lateinit var turnstileService: TurnstileService
 
-
     @GetMapping("/turnstile", produces = [MediaType.APPLICATION_NDJSON_VALUE])
     suspend fun turnstileGet(
-        @RequestParam("turnstileId") turnstileId: Long
+        @RequestParam("turnstileId") turnstileId: Long,
+        @RequestHeader("Authorization") authorizationHeader: String
     ): ResponseEntity<TurnstileDTO> {
         return ResponseEntity.ok(turnstileService.getTurnstileById(turnstileId))
     }
 
     @GetMapping("/turnstileValidation", produces = [MediaType.APPLICATION_NDJSON_VALUE])
     suspend fun turnstileValidationGet(
-        @RequestParam("ticketId") ticketId: Long
+        @RequestParam("ticketId") ticketId: Long,
+        @RequestHeader("Authorization") authorizationHeader: String
     ): ResponseEntity<TurnstileValidationDTO?> {
         val turnstileValidationDTO: TurnstileValidationDTO? = turnstileService.getTurnstileValidationByTicketId(ticketId)
         return if(turnstileValidationDTO != null)
@@ -40,10 +40,10 @@ class AdminController {
             ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
     }
 
-
     @PostMapping("/registerTurnstile", produces = [MediaType.APPLICATION_NDJSON_VALUE])
     suspend fun registerTurnstilePost(
-        @RequestBody turnstileDTO: TurnstileDTO
+        @RequestBody turnstileDTO: TurnstileDTO,
+        @RequestHeader("Authorization") authorizationHeader: String
     ): ResponseEntity<TurnstileDTO?> {
         try {
             turnstileService.addTurnstile(turnstileDTO)
@@ -55,14 +55,16 @@ class AdminController {
 
     @GetMapping("/transitCount", produces = [MediaType.APPLICATION_NDJSON_VALUE])
     suspend fun turnstileTransitCountGet(
-        @RequestParam("turnstileId")
-        turnstileId: Long
+        @RequestParam("turnstileId"),
+        turnstileId: Long,
+        @RequestHeader("Authorization") authorizationHeader: String
     ): ResponseEntity<TurnstileActivityDTO?> {
         return ResponseEntity.ok(turnstileService.getTurnstileTransitCount(turnstileId))
     }
 
     @GetMapping("/transitCountAll", produces = [MediaType.APPLICATION_NDJSON_VALUE])
     suspend fun allTurnstilesTransitCountGet(
+        @RequestHeader("Authorization") authorizationHeader: String
     ): ResponseEntity<TurnstileActivityDTO?> {
         return ResponseEntity.ok(turnstileService.getAllTurnstilesTransitCount())
     }
@@ -75,7 +77,8 @@ class AdminController {
         @RequestParam("startPeriod")
         startPeriod: String,
         @RequestParam("endPeriod")
-        endPeriod: String
+        endPeriod: String,
+        @RequestHeader("Authorization") authorizationHeader: String
     ): ResponseEntity<TurnstileActivityDTO?> {
         return ResponseEntity.ok(turnstileService.getTurnstileTransitCountPeriod(turnstileId, LocalDateTime.parse(startPeriod, DateTimeFormatter.ISO_LOCAL_DATE_TIME), LocalDateTime.parse(endPeriod, DateTimeFormatter.ISO_LOCAL_DATE_TIME)))
     }
@@ -85,7 +88,8 @@ class AdminController {
         @RequestParam("startPeriod")
         startPeriod: String,
         @RequestParam("endPeriod")
-        endPeriod: String
+        endPeriod: String,
+        @RequestHeader("Authorization") authorizationHeader: String
     ): ResponseEntity<TurnstileActivityDTO?> {
         return ResponseEntity.ok(turnstileService.getAllTurnstilesTransitCountPeriod(LocalDateTime.parse(startPeriod, DateTimeFormatter.ISO_LOCAL_DATE_TIME), LocalDateTime.parse(endPeriod, DateTimeFormatter.ISO_LOCAL_DATE_TIME)))
     }
@@ -93,7 +97,8 @@ class AdminController {
     @GetMapping("/userTransitCount", produces = [MediaType.APPLICATION_NDJSON_VALUE])
     suspend fun userTransitCountGet(
         @RequestParam("username")
-        username: String
+        username: String,
+        @RequestHeader("Authorization") authorizationHeader: String
     ): ResponseEntity<UserActivityDTO?> {
         return ResponseEntity.ok(turnstileService.getUserTransitCount(username))
     }
@@ -105,18 +110,18 @@ class AdminController {
         @RequestParam("startPeriod")
         startPeriod: String,
         @RequestParam("endPeriod")
-        endPeriod: String
+        endPeriod: String,
+        @RequestHeader("Authorization") authorizationHeader: String
     ): ResponseEntity<UserActivityDTO?> {
         return ResponseEntity.ok(turnstileService.getUserTransitCountPeriod(username, LocalDateTime.parse(startPeriod, DateTimeFormatter.ISO_LOCAL_DATE_TIME), LocalDateTime.parse(endPeriod, DateTimeFormatter.ISO_LOCAL_DATE_TIME)))
     }
 
-
     @GetMapping("/userTransits", produces = [MediaType.APPLICATION_NDJSON_VALUE])
     suspend fun allUserTransitsGet(
         @RequestParam("username")
-        username: String
+        username: String,
+        @RequestHeader("Authorization") authorizationHeader: String
     ): ResponseEntity<Flow<TurnstileValidationDTO?>> {
         return ResponseEntity.ok(turnstileService.getAllUserTransits(username))
     }
-
 }

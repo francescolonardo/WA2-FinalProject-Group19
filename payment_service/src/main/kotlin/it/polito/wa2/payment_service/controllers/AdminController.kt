@@ -16,7 +16,9 @@ class AdminController {
     private lateinit var transactionService: TransactionServiceImpl
 
     @GetMapping("/admin/transactions", produces = [MediaType.APPLICATION_NDJSON_VALUE])
-    fun transactions(@RequestHeader("Authorization") authorizationHeader: String): ResponseEntity<Flow<TransactionDTO>> {
+    fun transactions(
+        @RequestHeader("Authorization") authorizationHeader: String
+    ): ResponseEntity<Flow<TransactionDTO>> {
         return ResponseEntity.ok(transactionService.findAll())
     }
 }
