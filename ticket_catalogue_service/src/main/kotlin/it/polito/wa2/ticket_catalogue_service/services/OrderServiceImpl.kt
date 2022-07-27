@@ -57,8 +57,7 @@ class OrderServiceImpl : OrderService {
                     resp.bodyToMono(String::class.java).map { Exception(it) }
                 }
                 .awaitBody()
-            // TODO: comment this (just for tests)
-            /*
+
             val birthDate = userProfile.dateOfBirth!!
                 .toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
             val age = Period.between(birthDate, LocalDate.now()).years
@@ -66,7 +65,6 @@ class OrderServiceImpl : OrderService {
                 return null
             if (ticket.maxAge != null && ticket.maxAge < age)
                 return null
-            */
         }
         val newOrder = orderRepository.save(
             Order(
