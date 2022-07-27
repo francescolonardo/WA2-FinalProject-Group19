@@ -12,6 +12,6 @@ interface OrderService {
     fun getAllOrders(): Flow<OrderDTO>
     suspend fun getAllOrdersByUserId(userId: Long, authorizationHeader: String): Flow<OrderDTO>
     fun updateOrderByTransactionInfo(transactionJson: String)
-    fun getAllOrdersByDate(start: Timestamp, end : Timestamp) : Flow<OrderDTO>
-    fun getAllUserOrdersByDate(start : Timestamp, end: Timestamp, username: String) : Flow<OrderDTO>
+    suspend fun getAllOrdersByDate(start: Timestamp, end : Timestamp) : Flow<OrderDTO>
+    suspend fun getAllUserOrdersByDate(start : Timestamp, end : Timestamp, userId: Long, authorizationHeader: String ) : Flow<OrderDTO>
 }
