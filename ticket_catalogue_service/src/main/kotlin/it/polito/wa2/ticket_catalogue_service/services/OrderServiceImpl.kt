@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.awaitBody
+import java.sql.Timestamp
 import java.time.LocalDate
 import java.time.Period
 import java.time.ZoneId
@@ -74,7 +75,8 @@ class OrderServiceImpl : OrderService {
                 billingInformationDTO.ticketsQuantity,
                 OrderStatus.PENDING,
                 username,
-                false
+                false,
+                Timestamp(System.currentTimeMillis()) // add time stamp to order
             )
         )
         kafkaTemplate.send(
@@ -99,6 +101,7 @@ class OrderServiceImpl : OrderService {
         if (!order.purchased && order.status == OrderStatus.COMPLETED) {
             buyOrderedTickets(order.quantity, ticket!!.validityZones, authorizationHeader)
             order.purchased = true
+            order.orderdate = Timestamp(System.currentTimeMillis())
             orderRepository.save(order)
         }
         return order.toDTO()
@@ -112,6 +115,18 @@ class OrderServiceImpl : OrderService {
     override fun getAllOrders(): Flow<OrderDTO> {
         return orderRepository.findAll()
             .map { order -> order.toDTO() }
+    }
+
+    override suspend fun getAllOrdersByDate(start : Timestamp, end : Timestamp) : Flow<OrderDTO>{
+        return orderRepository.findAllOrdersByDate(start, end)
+            .map{order -> order.toDTO()}
+    }
+
+    override suspend fun getAllUserOrdersByDate (start : Timestamp, end : Timestamp, userId: Long, authorizationHeader: String ) : Flow<OrderDTO>
+    {
+        val username = retrieveUsernameByUserId(userId, authorizationHeader)
+        return orderRepository.findAllUserOrdersByDate(start,end,username)
+            .map{order -> order.toDTO()}
     }
 
     private suspend fun retrieveUsernameByUserId(userId: Long, authorizationHeader: String): String {
