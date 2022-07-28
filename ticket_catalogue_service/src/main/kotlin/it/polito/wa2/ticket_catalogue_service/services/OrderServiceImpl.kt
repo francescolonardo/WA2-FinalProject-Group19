@@ -24,8 +24,7 @@ import org.springframework.web.reactive.function.client.awaitBody
 import java.sql.Timestamp
 import java.time.LocalDate
 import java.time.Period
-import java.time.ZoneId
-import java.util.Date
+import java.time.format.DateTimeFormatter
 
 @Service
 class OrderServiceImpl : OrderService {
@@ -58,21 +57,16 @@ class OrderServiceImpl : OrderService {
                     resp.bodyToMono(String::class.java).map { Exception(it) }
                 }
                 .awaitBody()
-            // TODO: fix this (returned just the username)
-            /*
-            println(userProfile.username)
-            println(userProfile.telephoneNumber)
-            println(userProfile.dateOfBirth)
-            return null
-            val birthDate = userProfile.dateOfBirth!!
-                .toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+
+            val birthDate = LocalDate.parse(
+                userProfile.dateOfBirth,
+                DateTimeFormatter.ofPattern("dd/MM/yyyy")
+            )
             val age = Period.between(birthDate, LocalDate.now()).years
-            println("TEST $age")
             if (ticket.minAge != null && ticket.minAge > age)
                 return null
             if (ticket.maxAge != null && ticket.maxAge < age)
                 return null
-             */
         }
         val newOrder = orderRepository.save(
             Order(
