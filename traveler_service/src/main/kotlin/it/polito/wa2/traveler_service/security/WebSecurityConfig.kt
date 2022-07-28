@@ -34,7 +34,7 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
             .antMatchers(HttpMethod.GET,"/admin/travelers").hasAuthority("ADMIN")
             .antMatchers(HttpMethod.GET,"/admin/traveler/**/profile").hasAuthority("ADMIN")
             .antMatchers(HttpMethod.GET,"/admin/traveler/**/tickets").hasAuthority("ADMIN")
-            .antMatchers(HttpMethod.PUT,"/embedded/**").hasAuthority("EMBEDDED")
+            .antMatchers(HttpMethod.PUT,"/turnstile/**").hasAuthority("EMBEDDED")
 
         http.authorizeRequests()
             .anyRequest().authenticated() // allows only authenticated users to be able to access the remaining paths

@@ -321,6 +321,15 @@
 
 ---
 
+- PUT `/turnstile/validate/{ticketId}`
+
+  - response body [200 OK]:
+    ```json
+    true
+    ```
+
+---
+
 # ticket-catalogue-service
 
 - GET `/tickets`
