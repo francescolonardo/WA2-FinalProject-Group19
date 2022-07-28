@@ -1,7 +1,6 @@
 package it.polito.wa2.traveler_service.dtos
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.*
 
 data class UserDetailsInputDTO(
     @JsonProperty("date_of_birth")

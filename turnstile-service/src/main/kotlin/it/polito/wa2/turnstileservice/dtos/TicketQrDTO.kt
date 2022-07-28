@@ -12,7 +12,7 @@ import java.io.ByteArrayInputStream
 import javax.imageio.ImageIO
 
 data class TicketQrDTO(
-    @JsonProperty("qr_code") var qrCode: String = ""
+    @JsonProperty("qrcode") var qrCode: String = ""
 ){
     fun decodeQRCode(): String? {
         return try {

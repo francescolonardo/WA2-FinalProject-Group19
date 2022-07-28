@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional
 
 @Repository
 interface TurnstileRepository: CoroutineCrudRepository<Turnstile, Long>{
-
     @Transactional(readOnly = true)
     @Query("""
      SELECT * FROM turnstile

@@ -2,12 +2,13 @@ package it.polito.wa2.turnstileservice.dtos
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-class UserDetailsDTO(
+class JwtSubjectInfoDTO(
     @JsonProperty val id: Long,
-    @JsonProperty val role: Role,
+    @JsonProperty val roles: Set<Role> = mutableSetOf()
 )
 
-enum class Role{
+enum class Role {
     ADMIN,
+    CUSTOMER,
     EMBEDDED
 }

@@ -60,9 +60,12 @@ class TurnstileServiceImpl: TurnstileService {
         }.firstOrNull()?.toDTO()
     }
 
-    override suspend fun validateTicket(ticketQrDTO: TicketQrDTO, loggedTurnstileId: Long, authorizationHeader: String): Boolean {
+    override suspend fun validateTicket(
+        ticketQrDTO: TicketQrDTO,
+        loggedTurnstileId: Long,
+        authorizationHeader: String
+    ): Boolean {
         val ticketJwt: String? = ticketQrDTO.decodeQRCode()
-        println("TEST $ticketJwt")
         val jwtUtils = JwtUtils(jwtTicketsSecretB64Key)
         val validation = jwtUtils.validateJwt(ticketJwt)
         if(!validation)
@@ -70,8 +73,8 @@ class TurnstileServiceImpl: TurnstileService {
         else {
             val ticketDTO: TicketDTO = jwtUtils.getDetailsJwtTicket(ticketJwt)
             try {
-                val flag = setTicketAsUsed(ticketDTO.sub, authorizationHeader)
-                if(!flag)
+                val ticketUpdated = setTicketAsUsed(ticketDTO.sub, authorizationHeader)
+                if(!ticketUpdated)
                     return false
                 turnstileValidationRepository.save(
                     TurnstileValidation().apply {
@@ -82,7 +85,8 @@ class TurnstileServiceImpl: TurnstileService {
                     }
                 )
                 return true
-            }catch(ex: Exception){
+            } catch (ex: Exception) {
+                println(ex.localizedMessage)
                 return false
             }
         }
@@ -149,9 +153,9 @@ class TurnstileServiceImpl: TurnstileService {
     }
 
     private suspend fun setTicketAsUsed(ticketId: Long, authorizationHeader: String): Boolean {
-        val flag: Boolean = travelerWebClient
+        val ticketUpdated: Boolean = travelerWebClient
             .put()
-            .uri("embedded/${ticketId}")
+            .uri("/turnstile/validate/${ticketId}")
             .accept(MediaType.APPLICATION_JSON)
             .header(jwtHttpHeaderName, authorizationHeader)
             .retrieve()
@@ -159,6 +163,6 @@ class TurnstileServiceImpl: TurnstileService {
                 resp.bodyToMono(String::class.java).map { Exception(it) }
             }
             .awaitBody()
-        return flag
+        return ticketUpdated
     }
 }

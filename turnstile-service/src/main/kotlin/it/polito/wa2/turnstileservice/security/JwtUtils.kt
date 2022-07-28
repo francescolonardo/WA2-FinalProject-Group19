@@ -41,8 +41,9 @@ class JwtUtils(base64Key: String) {
         val roles: MutableSet<Role> = mutableSetOf()
         rolesString.map { roleString ->
             roles += when (roleString) {
-                "ADMIN" -> Role.ADMIN
-                else -> Role.EMBEDDED
+                "CUSTOMER" -> Role.CUSTOMER
+                "EMBEDDED" -> Role.EMBEDDED
+                else -> Role.ADMIN
             }
         }
         return UserRoles(id.toLong(), roles)
@@ -57,7 +58,7 @@ class JwtUtils(base64Key: String) {
         val iat = decodedJwt.body["iat"] as Int
         val exp = decodedJwt.body["exp"] as Int
         val zid = decodedJwt.body["zid"] as String
-        val used = decodedJwt.body["used"] as Boolean // TODO: remove this
+        val used = false // TODO: remove this, and remove used field
         val username = decodedJwt.body["username"] as String
         return TicketDTO(
             sub.toLong(),

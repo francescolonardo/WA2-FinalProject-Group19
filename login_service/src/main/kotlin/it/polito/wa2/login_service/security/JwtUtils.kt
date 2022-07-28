@@ -28,15 +28,14 @@ class JwtUtils(base64Key: String) {
             .setSigningKey(signatureKey)
             .build()
             .parseClaimsJws(authToken)
-
         val username = decodedJwt.body["sub"] as String
         val rolesString: List<String> = decodedJwt.body["roles"] as List<String>
         val roles: MutableSet<Role> = mutableSetOf()
         rolesString.map { roleString ->
             roles += when (roleString) {
-                "ADMIN" -> Role.ADMIN
+                "CUSTOMER" -> Role.CUSTOMER
                 "EMBEDDED" -> Role.EMBEDDED
-                else -> Role.CUSTOMER
+                else -> Role.ADMIN
             }
         }
         return JwtSubjectInfoDTO(username, roles)

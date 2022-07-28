@@ -77,8 +77,7 @@ class TravelerServiceImpl : TravelerService {
     }
 
     override fun updateUsedPropertyById(ticket: TicketPurchased): Boolean {
-        if(!ticket.used)
-        {
+        if (!ticket.used) {
             ticket.used = true
             ticketPurchasedRepository.save(ticket)
             return true
