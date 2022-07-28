@@ -25,6 +25,7 @@ import java.sql.Timestamp
 import java.time.LocalDate
 import java.time.Period
 import java.time.ZoneId
+import java.util.Date
 
 @Service
 class OrderServiceImpl : OrderService {
@@ -106,7 +107,7 @@ class OrderServiceImpl : OrderService {
         if (!order.purchased && order.status == OrderStatus.COMPLETED) {
             buyOrderedTickets(order.quantity, ticket!!.validityZones, authorizationHeader)
             order.purchased = true
-            order.timestamp = Timestamp(System.currentTimeMillis())
+            order.dateTime = Timestamp(System.currentTimeMillis())
             orderRepository.save(order)
         }
         return order.toDTO()
@@ -122,19 +123,25 @@ class OrderServiceImpl : OrderService {
             .map { order -> order.toDTO() }
     }
 
-    /*
-    override suspend fun getAllOrdersByDate(start: Timestamp, end: Timestamp): Flow<OrderDTO> {
-        return orderRepository.findAllOrdersByDate(start, end)
-            .map{order -> order.toDTO()}
+    override fun getAllOrdersByDate(
+        startDate: Timestamp,
+        endDate: Timestamp
+    ): Flow<OrderDTO> {
+        return orderRepository.findAllOrdersByDate(startDate, endDate)
+            .map { order -> order.toDTO() }
     }
 
-    override suspend fun getAllUserOrdersByDate(start: Timestamp, end: Timestamp, userId: Long, authorizationHeader: String): Flow<OrderDTO>
+    override suspend fun getAllUserOrdersByDate(
+        userId: Long,
+        startDate: Timestamp,
+        endDate: Timestamp,
+        authorizationHeader: String
+    ): Flow<OrderDTO>
     {
         val username = retrieveUsernameByUserId(userId, authorizationHeader)
-        return orderRepository.findAllUserOrdersByDate(start, end, username)
-            .map{order -> order.toDTO()}
+        return orderRepository.findAllUserOrdersByDate(username, startDate, endDate)
+            .map{ order -> order.toDTO() }
     }
-     */
 
     private suspend fun retrieveUsernameByUserId(userId: Long, authorizationHeader: String): String {
         val userProfile: UserDetailsDTO = travelerWebClient

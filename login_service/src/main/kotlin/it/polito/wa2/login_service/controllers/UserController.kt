@@ -76,13 +76,20 @@ class UserController {
     fun userValidation(
         @RequestParam("provisional_id") provisionalId: UUID,
         @RequestParam("activation_code") activationCode: String
-    ): String {
+    ): ResponseEntity<Any?> {
         return try {
-            val userOutputDTO = userService.validateTraveler(provisionalId, activationCode)
-            "Email ${userOutputDTO.email} confirmed, user ${userOutputDTO.username} activated!"
+            println(provisionalId)
+            println(activationCode)
+            val travelerOutputDTO = userService.validateTraveler(
+                provisionalId,
+                activationCode
+            )
+            ResponseEntity.status(HttpStatus.CREATED).body(travelerOutputDTO)
         } catch (ex: InvalidActivationException) {
             println(ex.localizedMessage)
-            "Validation error: " + ex.localizedMessage
+            val error = HashMap<String, String>()
+            error["error"] = ex.localizedMessage
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error)
         }
     }
 

@@ -11,9 +11,9 @@ data class OrderDTO (
     @JsonProperty("quantity") val quantity: Int,
     @JsonProperty("status") val status: OrderStatus,
     @JsonProperty("username") val username: String,
-    @JsonProperty("timestamp_") val timestamp: Timestamp? = null
+    @JsonProperty("date_time") val dateTime: Timestamp? = null
 )
 
 fun Order.toDTO(): OrderDTO {
-    return OrderDTO(this.id, this.ticketId, this.quantity, this.status, this.username, this.timestamp)
+    return OrderDTO(this.id, this.ticketId, this.quantity, this.status, this.username, this.dateTime)
 }

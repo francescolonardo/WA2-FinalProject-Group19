@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.sql.Date
 import java.sql.Timestamp
 
 @RestController
@@ -45,28 +46,36 @@ class AdminController {
         return ResponseEntity.ok(retrievedOrders)
     }
 
-    /*
     @GetMapping("/orders/date", produces = [MediaType.APPLICATION_NDJSON_VALUE])
-    @ResponseBody
     suspend fun getAllOrdersByDate(
-        @RequestParam start: Timestamp,
-        @RequestParam end : Timestamp,
+        @RequestParam start: Date,
+        @RequestParam end: Date,
         @RequestHeader("Authorization") authorizationHeader: String
     ): ResponseEntity<Flow<OrderDTO>> {
-        val retrievedOrders = orderService.getAllOrdersByDate(start, end)
+        val startTimestamp = Timestamp(start.time)
+        val endTimestamp = Timestamp(end.time)
+        val retrievedOrders = orderService.getAllOrdersByDate(
+            startTimestamp,
+            endTimestamp
+        )
         return ResponseEntity.ok(retrievedOrders)
     }
 
     @GetMapping("/orders/{userId}/date", produces = [MediaType.APPLICATION_NDJSON_VALUE])
-    @ResponseBody
     suspend fun getUserOrdersByDate(
-        @RequestParam start: Timestamp,
-        @RequestParam end : Timestamp,
         @PathVariable("userId") userId: Long,
-        @RequestHeader("Authorization") authorizationHeader: String 
+        @RequestParam start: Date,
+        @RequestParam end: Date,
+        @RequestHeader("Authorization") authorizationHeader: String
     ): ResponseEntity<Flow<OrderDTO>> {
-        val retrievedOrders = orderService.getAllUserOrdersByDate(start,end,userId,authorizationHeader)
+        val startTimestamp = Timestamp(start.time)
+        val endTimestamp = Timestamp(end.time)
+        val retrievedOrders = orderService.getAllUserOrdersByDate(
+            userId,
+            startTimestamp,
+            endTimestamp,
+            authorizationHeader
+        )
         return ResponseEntity.ok(retrievedOrders)
     }
-    */
 }

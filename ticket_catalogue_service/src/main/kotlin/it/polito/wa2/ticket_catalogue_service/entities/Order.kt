@@ -1,7 +1,6 @@
 package it.polito.wa2.ticket_catalogue_service.entities
 
 import org.springframework.data.annotation.Id
-import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import java.sql.Timestamp
 
@@ -14,8 +13,7 @@ data class Order (
     var status: OrderStatus,
     val username: String,
     var purchased: Boolean,
-    @Column("timestamp_")
-    var timestamp: Timestamp
+    var dateTime: Timestamp
 )
 
 enum class OrderStatus {
