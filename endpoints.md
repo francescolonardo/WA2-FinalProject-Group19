@@ -45,7 +45,9 @@
 
 - GET `/user/validate`
 
-  - request params: `provisional_id`, `activation_code`
+  - request params:
+    - `provisional_id`: UUID (e.g. `d3544e82-0208-4391-b829-11dd6b34f113`)
+	- `activation_code`: String (e.g. `805256`)
   - response body [201 Created]:
     ```json
     {
@@ -449,7 +451,9 @@
 
 - GET `/admin/orders/date`
 
-  - request params: `start`, `end`
+  - request params:
+    - `start`: Date (e.g. `2022-01-01`)
+	- `end`: Date (e.g. `2022-12-31`)
   - response body [200 OK]:
     ```json
 	{
@@ -482,7 +486,9 @@
 
 - GET `/admin/orders/{userId}/date`
 
-  - request params: `start`, `end`
+  - request params:
+    - `start`: Date (e.g. `2022-01-01`)
+	- `end`: Date (e.g. `2022-12-31`)
   - response body [200 OK]:
     ```json
 	{

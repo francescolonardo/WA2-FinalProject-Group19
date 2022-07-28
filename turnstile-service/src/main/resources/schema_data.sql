@@ -13,4 +13,3 @@ CREATE TABLE IF NOT EXISTS turnstile_validation(
     username            VARCHAR(20),
     date_time           TIMESTAMP
 );
-

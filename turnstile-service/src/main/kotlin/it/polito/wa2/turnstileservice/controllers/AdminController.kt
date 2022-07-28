@@ -55,8 +55,7 @@ class AdminController {
 
     @GetMapping("/transitCount", produces = [MediaType.APPLICATION_NDJSON_VALUE])
     suspend fun turnstileTransitCountGet(
-        @RequestParam("turnstileId"),
-        turnstileId: Long,
+        @RequestParam("turnstileId") turnstileId: Long,
         @RequestHeader("Authorization") authorizationHeader: String
     ): ResponseEntity<TurnstileActivityDTO?> {
         return ResponseEntity.ok(turnstileService.getTurnstileTransitCount(turnstileId))
