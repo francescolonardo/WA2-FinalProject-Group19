@@ -25,12 +25,4 @@ class TurnstileController {
         else
             ResponseEntity.ok(true)
     }
-
-    @PostMapping("/generateQR")
-    suspend fun generateQrFromTicketPost(
-        @RequestBody ticketQR: TicketQrDTO,
-        @RequestHeader("Authorization") authorizationHeader: String
-    ): ResponseEntity<String> {
-        return ResponseEntity.ok(TicketQrDTO(ticketQR.qrCode).generateQRCode())
-    }
 }

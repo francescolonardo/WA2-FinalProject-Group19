@@ -20,24 +20,17 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.awaitBody
 import java.time.LocalDateTime
 
-
 @Service
 class TurnstileServiceImpl: TurnstileService {
-
     private val travelerWebClient = WebClient.create("http://localhost:8282") // traveler-service
-
     @Autowired
     lateinit var turnstileRepository: TurnstileRepository
-
     @Autowired
     lateinit var turnstileValidationRepository: TurnstileValidationRepository
-
     @Value("\${jwt.authorization.signature-key-base64}")
     private lateinit var base64Key: String
-
     @Value("\${jwt.authorization.http-header-name}")
     private lateinit var jwtHttpHeaderName: String
-
 
     override suspend fun addTurnstile(turnstileDTO: TurnstileDTO): TurnstileDTO {
         println(turnstileDTO)
@@ -58,7 +51,6 @@ class TurnstileServiceImpl: TurnstileService {
                  turnstileDTO
             } else
                  null
-
             //turnstileRepository.getTurnstileById(turnstileId).toDTO()
         }
     }
@@ -124,7 +116,6 @@ class TurnstileServiceImpl: TurnstileService {
         }
     }
 
-
     override suspend fun getAllTurnstilesTransitCountPeriod(startPeriod: LocalDateTime, endPeriod: LocalDateTime): TurnstileActivityDTO {
         return withContext(Dispatchers.IO) {
             TurnstileActivityDTO().apply{
@@ -171,5 +162,4 @@ class TurnstileServiceImpl: TurnstileService {
             .awaitBody()
         return flag
     }
-
 }

@@ -5,6 +5,5 @@ import it.polito.wa2.login_service.dtos.TurnstileOutputDTO
 
 interface TurnstileService {
     fun registerTurnstile(secret: String) : TurnstileOutputDTO
-
     fun generateToken(turnstileDTO: TurnstileDTO) : String
 }

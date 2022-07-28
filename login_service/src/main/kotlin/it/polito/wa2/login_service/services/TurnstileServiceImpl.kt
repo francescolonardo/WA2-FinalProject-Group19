@@ -18,13 +18,11 @@ import java.util.*
 class TurnstileServiceImpl: TurnstileService {
     @Autowired
     private lateinit var turnstileRepository: TurnstileRepository
-
+    private val bCryptPasswordEncoder = BCryptPasswordEncoder()
     @Value("\${jwt.authorization.signature-key-base64}")
     private lateinit var jwtSecretB64Key: String
     @Value("\${jwt.authorization.expiration-time-ms}")
     private lateinit var jwtExpirationTimeMs: String
-
-    private val bCryptPasswordEncoder = BCryptPasswordEncoder()
 
     private fun checkPasswordStrength(password: String): Boolean {
         val passwordRegex = Regex(
@@ -43,13 +41,11 @@ class TurnstileServiceImpl: TurnstileService {
     override fun registerTurnstile(secret: String): TurnstileOutputDTO {
         if(!checkPasswordStrength(secret))
             throw Exception("Password not strong enough")
-
         val newTurnstile = turnstileRepository.save(
             Turnstile().apply {
                 this.secret = bCryptPasswordEncoder.encode(secret)
             }
         )
-
         return TurnstileOutputDTO(newTurnstile.id)
     }
 
@@ -57,10 +53,8 @@ class TurnstileServiceImpl: TurnstileService {
         val turnstile = turnstileRepository.findById(turnstileDTO.id)
         if(turnstile.isEmpty)
             throw Exception("Turnstile not found")
-
         if(!bCryptPasswordEncoder.matches(turnstileDTO.secret, turnstile.get().secret))
             throw Exception("Wrong secret")
-
         val jwtSecretByteKey = Base64.getDecoder().decode(jwtSecretB64Key)
         val jwtSecretKey: Key = Keys.hmacShaKeyFor(jwtSecretByteKey)
         return Jwts.builder()

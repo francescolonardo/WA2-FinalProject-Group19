@@ -74,7 +74,7 @@
   - response body [200 OK]:
     ```json
     {
-	    "Authorization": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.
+	    "authorization": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.
 		eyJzdWIiOiJqb2huIiwiaWF0IjoxNjU4Nzk2NTY0LCJleHAiOjE2NTg4MDAxNjQsInJvbGVzIjpbIkNVU1RPTUVSIl19.  
 		iLUYNYwm8Q9noAHl602_WZT3Xd7BWBZ0GAA3TBELbT8"
 	}
@@ -129,6 +129,42 @@
 - GET `/admin/disableAccount/{userId}`
 
   - response body [200 OK]: none
+
+---
+
+- POST `/turnstile/register`
+
+  - request body:
+    ```json
+    {
+		"id": "1",
+		"secret": "Secret123@"
+	}
+    ```
+  - response body [201 Created]:
+    ```json
+    {
+		"id": 1
+	}
+    ```
+
+---
+
+- POST `/turnstile/token`
+
+  - request body:
+    ```json
+    {
+		"id": "1",
+		"secret": "Secret123@"
+	}
+    ```
+  - response body [200 OK]:
+    ```json
+    {
+		"authorization": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjU5MDQyNzU5LCJleHAiOjE2NTkwNDYzNTksInJvbGVzIjpbIkVNQkVEREVEIl19.wSBhcaAQMErLpSL882Ij3ZvNJNeYEJ4GrTKZe0G46lA"
+	}
+    ```
 
 ---
 

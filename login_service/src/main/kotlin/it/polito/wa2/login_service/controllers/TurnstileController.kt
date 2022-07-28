@@ -28,11 +28,11 @@ class TurnstileController {
     }
 
     @PostMapping("/token")
-    fun generateToken(@RequestBody turnstileDTO: TurnstileDTO): ResponseEntity<HashMap<String, String>> {
+    fun generateToken(@RequestBody turnstileDTO: TurnstileDTO): ResponseEntity<Any> {
         return try {
             val token = turnstileService.generateToken(turnstileDTO)
             val map = HashMap<String, String>()
-            map["token"] = token
+            map["authorization"] = token
             ResponseEntity.status(HttpStatus.OK).body(map)
         } catch (ex: Exception){
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
