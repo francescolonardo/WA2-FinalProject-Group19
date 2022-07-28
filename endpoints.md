@@ -137,7 +137,6 @@
   - request body:
     ```json
     {
-		"id": "1",
 		"secret": "Secret123@"
 	}
     ```

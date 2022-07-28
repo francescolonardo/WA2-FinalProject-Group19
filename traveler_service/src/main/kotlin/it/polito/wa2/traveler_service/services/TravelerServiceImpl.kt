@@ -28,9 +28,9 @@ class TravelerServiceImpl : TravelerService {
     private lateinit var qrCodeService: QRCodeServiceImpl
 
     @Value("\${jwt.tickets.signature-key-base64}")
-    private lateinit var jwtSecretB64Key: String
+    private lateinit var jwtTicketsSecretB64Key: String
     @Value("\${jwt.tickets.expiration-time-ms}")
-    private var jwtExpirationTimeMs: Int = 0
+    private var jwtTicketsExpirationTimeMs: Int = 0
 
     override fun getProfileById(id: Long): UserDetailsDTO? {
         return userDetailsRepository.findUserDetailsById(id)?.toDTO()
@@ -70,8 +70,7 @@ class TravelerServiceImpl : TravelerService {
         userDetailsRepository.save(retrievedProfile)
         return retrievedProfile.toDTO()
     }
-    
-    
+
     override fun getTicketDetailById(id: Long): TicketPurchased? {
         return ticketPurchasedRepository.findByIdOrNull(id)
     }
@@ -99,10 +98,10 @@ class TravelerServiceImpl : TravelerService {
     }
 
     fun createTickets(username: String, quantity: Int, zones: String): List<TicketPurchased> {
-        val jwtSecretByteKey = Base64.getDecoder().decode(jwtSecretB64Key)
+        val jwtSecretByteKey = Base64.getDecoder().decode(jwtTicketsSecretB64Key)
         val jwtSecretKey: Key = Keys.hmacShaKeyFor(jwtSecretByteKey)
         val iat = Timestamp(System.currentTimeMillis())
-        val exp = Timestamp(System.currentTimeMillis() + jwtExpirationTimeMs)
+        val exp = Timestamp(System.currentTimeMillis() + jwtTicketsExpirationTimeMs)
         val tickets: MutableList<TicketPurchased> = mutableListOf()
         for (i in 1..quantity) {
             val sub = ticketPurchasedRepository.getNextSub()

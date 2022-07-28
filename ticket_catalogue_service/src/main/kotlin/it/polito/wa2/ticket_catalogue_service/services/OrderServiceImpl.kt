@@ -57,7 +57,6 @@ class OrderServiceImpl : OrderService {
                     resp.bodyToMono(String::class.java).map { Exception(it) }
                 }
                 .awaitBody()
-
             val birthDate = LocalDate.parse(
                 userProfile.dateOfBirth,
                 DateTimeFormatter.ofPattern("dd/MM/yyyy")

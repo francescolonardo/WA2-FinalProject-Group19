@@ -39,6 +39,7 @@ class TurnstileServiceImpl: TurnstileService {
     }
 
     override fun registerTurnstile(secret: String): TurnstileOutputDTO {
+
         if(!checkPasswordStrength(secret))
             throw Exception("Password not strong enough")
         val newTurnstile = turnstileRepository.save(

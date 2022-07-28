@@ -20,7 +20,7 @@ class TurnstileController {
         @RequestHeader("Authorization") authorizationHeader: String,
         loggedTurnstile: Principal
     ): ResponseEntity<Boolean> {
-        return if(!turnstileService.validateTicket(ticketQR,loggedTurnstile.name.toLong(),authorizationHeader))
+        return if(!turnstileService.validateTicket(ticketQR, loggedTurnstile.name.toLong(), authorizationHeader))
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body(false)
         else
             ResponseEntity.ok(true)

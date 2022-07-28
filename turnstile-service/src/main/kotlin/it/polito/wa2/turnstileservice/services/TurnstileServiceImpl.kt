@@ -27,13 +27,12 @@ class TurnstileServiceImpl: TurnstileService {
     lateinit var turnstileRepository: TurnstileRepository
     @Autowired
     lateinit var turnstileValidationRepository: TurnstileValidationRepository
-    @Value("\${jwt.authorization.signature-key-base64}")
-    private lateinit var base64Key: String
+    @Value("\${jwt.tickets.signature-key-base64}")
+    private lateinit var jwtTicketsSecretB64Key: String
     @Value("\${jwt.authorization.http-header-name}")
     private lateinit var jwtHttpHeaderName: String
 
     override suspend fun addTurnstile(turnstileDTO: TurnstileDTO): TurnstileDTO {
-        println(turnstileDTO)
         return turnstileRepository.save(
             Turnstile().apply {
                 this.turnstileId = turnstileDTO.turnstileId
@@ -48,7 +47,7 @@ class TurnstileServiceImpl: TurnstileService {
             val turnstileDTO: TurnstileDTO
             return@withContext if(turnstile != null) {
                 turnstileDTO = turnstile.toDTO()
-                 turnstileDTO
+                turnstileDTO
             } else
                  null
             //turnstileRepository.getTurnstileById(turnstileId).toDTO()
@@ -61,9 +60,9 @@ class TurnstileServiceImpl: TurnstileService {
         }.firstOrNull()?.toDTO()
     }
 
-    override suspend fun validateTicket(ticketQrDTO: TicketQrDTO, loggedTurnstileId: Long, authorizationHeader: String): Boolean{
+    override suspend fun validateTicket(ticketQrDTO: TicketQrDTO, loggedTurnstileId: Long, authorizationHeader: String): Boolean {
         val ticketJwt: String? = ticketQrDTO.decodeQRCode()
-        val jwtUtils = JwtUtils(base64Key)
+        val jwtUtils = JwtUtils(jwtTicketsSecretB64Key)
         val validation = jwtUtils.validateJwt(ticketJwt)
         if(!validation)
             return false
@@ -99,13 +98,12 @@ class TurnstileServiceImpl: TurnstileService {
 
     override suspend fun getAllTurnstilesTransitCount(): TurnstileActivityDTO {
         return withContext(Dispatchers.IO) {
-                TurnstileActivityDTO().apply{
-                    this.turnstileId = null
-                    this.count = turnstileValidationRepository.getAllTurnstilesTransitCount().firstOrNull() ?: 0
-                }
+            TurnstileActivityDTO().apply {
+                this.turnstileId = null
+                this.count = turnstileValidationRepository.getAllTurnstilesTransitCount().firstOrNull() ?: 0
             }
         }
-
+    }
 
     override suspend fun getTurnstileTransitCountPeriod(turnstileId: Long, startPeriod: LocalDateTime, endPeriod: LocalDateTime): TurnstileActivityDTO {
         return withContext(Dispatchers.IO) {
@@ -144,9 +142,9 @@ class TurnstileServiceImpl: TurnstileService {
     }
 
     override suspend fun getAllUserTransits(username: String): Flow<TurnstileValidationDTO?> {
-           return withContext(Dispatchers.IO) {
-               turnstileValidationRepository.getAllUserTransits(username).map { e -> e?.toDTO() }
-           }
+       return withContext(Dispatchers.IO) {
+           turnstileValidationRepository.getAllUserTransits(username).map { e -> e?.toDTO() }
+       }
     }
 
     private suspend fun setTicketAsUsed(ticketId: Long, authorizationHeader: String): Boolean {
