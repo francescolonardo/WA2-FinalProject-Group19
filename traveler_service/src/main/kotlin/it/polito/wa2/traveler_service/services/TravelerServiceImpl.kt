@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service
 import org.springframework.data.repository.findByIdOrNull
 import java.security.Key
 import java.sql.Timestamp
+import java.time.LocalDate
 import java.util.*
 
 @Service
@@ -29,8 +30,8 @@ class TravelerServiceImpl : TravelerService {
 
     @Value("\${jwt.tickets.signature-key-base64}")
     private lateinit var jwtTicketsSecretB64Key: String
-    @Value("\${jwt.tickets.expiration-time-ms}")
-    private var jwtTicketsExpirationTimeMs: Int = 0
+    @Value("\${jwt.tickets.expiration-time-months}")
+    private var jwtTicketsExpirationTimeMonths: Long = 0
 
     override fun getProfileById(id: Long): UserDetailsDTO? {
         return userDetailsRepository.findUserDetailsById(id)?.toDTO()
@@ -101,7 +102,11 @@ class TravelerServiceImpl : TravelerService {
         val jwtSecretByteKey = Base64.getDecoder().decode(jwtTicketsSecretB64Key)
         val jwtSecretKey: Key = Keys.hmacShaKeyFor(jwtSecretByteKey)
         val iat = Timestamp(System.currentTimeMillis())
-        val exp = Timestamp(System.currentTimeMillis() + jwtTicketsExpirationTimeMs)
+        val exp = Timestamp.valueOf(
+            LocalDate.now()
+            .plusMonths(jwtTicketsExpirationTimeMonths)
+            .atTime(0, 0)
+        )
         val tickets: MutableList<TicketPurchased> = mutableListOf()
         for (i in 1..quantity) {
             val sub = ticketPurchasedRepository.getNextSub()

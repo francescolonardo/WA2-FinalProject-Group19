@@ -62,6 +62,7 @@ class TurnstileServiceImpl: TurnstileService {
 
     override suspend fun validateTicket(ticketQrDTO: TicketQrDTO, loggedTurnstileId: Long, authorizationHeader: String): Boolean {
         val ticketJwt: String? = ticketQrDTO.decodeQRCode()
+        println("TEST $ticketJwt")
         val jwtUtils = JwtUtils(jwtTicketsSecretB64Key)
         val validation = jwtUtils.validateJwt(ticketJwt)
         if(!validation)
