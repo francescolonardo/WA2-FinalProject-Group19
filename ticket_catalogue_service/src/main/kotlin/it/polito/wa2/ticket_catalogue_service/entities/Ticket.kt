@@ -5,7 +5,7 @@ import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 
 @Table("tickets")
-data class Ticket (
+data class Ticket(
     @Id
     val id: Long?,
     @Column("type_")

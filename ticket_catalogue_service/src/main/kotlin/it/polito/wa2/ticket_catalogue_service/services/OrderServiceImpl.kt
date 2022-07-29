@@ -46,7 +46,7 @@ class OrderServiceImpl : OrderService {
         authorizationHeader: String
     ): Long? {
         val ticket = ticketRepository.findById(billingInformationDTO.ticketId)
-            ?: throw TicketNotFoundException("Ticket not found with ticketId=${billingInformationDTO.ticketId}")
+            ?: throw TicketNotFoundException("Ticket not found")
         if (ticket.minAge != null || ticket.maxAge != null) {
             val userProfile: UserDetailsDTO = travelerWebClient
                 .get()

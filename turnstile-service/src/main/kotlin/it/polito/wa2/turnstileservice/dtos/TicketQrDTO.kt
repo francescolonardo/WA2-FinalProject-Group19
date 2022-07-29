@@ -12,8 +12,8 @@ import java.io.ByteArrayInputStream
 import javax.imageio.ImageIO
 
 data class TicketQrDTO(
-    @JsonProperty("qrcode") var qrCode: String = ""
-){
+    @JsonProperty("qrcode") var qrCode: String
+) {
     fun decodeQRCode(): String? {
         return try {
             val image: BufferedImage = ImageIO.read(ByteArrayInputStream(Base64.decode(this.qrCode)))
@@ -23,7 +23,7 @@ data class TicketQrDTO(
             hintMap[DecodeHintType.PURE_BARCODE] = true
             val qrCodeReader = QRCodeReader()
             qrCodeReader.decode(binaryBitmap, hintMap).text
-        } catch(ex: Exception) {
+        } catch (ex: Exception) {
             println(ex.localizedMessage)
             null
         }

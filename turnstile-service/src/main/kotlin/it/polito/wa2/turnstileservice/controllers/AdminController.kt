@@ -1,9 +1,6 @@
 package it.polito.wa2.turnstileservice.controllers
 
-import it.polito.wa2.turnstileservice.dtos.TurnstileActivityDTO
-import it.polito.wa2.turnstileservice.dtos.TurnstileDTO
-import it.polito.wa2.turnstileservice.dtos.TurnstileValidationDTO
-import it.polito.wa2.turnstileservice.dtos.UserActivityDTO
+import it.polito.wa2.turnstileservice.dtos.*
 import it.polito.wa2.turnstileservice.services.TurnstileService
 import kotlinx.coroutines.flow.Flow
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,12 +17,29 @@ class AdminController {
     @Autowired
     lateinit var turnstileService: TurnstileService
 
-    @GetMapping("/turnstile", produces = [MediaType.APPLICATION_NDJSON_VALUE])
-    suspend fun turnstileGet(
+    @GetMapping("/turnstile/info")
+    suspend fun turnstileInfoGet(
         @RequestParam("turnstileId") turnstileId: Long,
         @RequestHeader("Authorization") authorizationHeader: String
-    ): ResponseEntity<TurnstileDTO> {
-        return ResponseEntity.ok(turnstileService.getTurnstileById(turnstileId))
+    ): ResponseEntity<TurnstileDetailsDTO?> {
+        val retrievedTurnstileDetailsDTO =
+            turnstileService.getTurnstileDetails(turnstileId)
+        return ResponseEntity.ok(retrievedTurnstileDetailsDTO)
+    }
+
+    @PostMapping("/turnstile/info")
+    suspend fun turnstileInfoPost(
+        @RequestBody turnstileDetailsDTO: TurnstileDetailsDTO,
+        @RequestHeader("Authorization") authorizationHeader: String
+    ): ResponseEntity<TurnstileDetailsDTO?> {
+        return try {
+            val newTurnstileDetailsDTO =
+                turnstileService.addTurnstileDetails(turnstileDetailsDTO)
+            ResponseEntity.status(HttpStatus.CREATED).body(newTurnstileDetailsDTO)
+        } catch (ex: Exception) {
+            println(ex.localizedMessage)
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
+        }
     }
 
     @GetMapping("/turnstileValidation", produces = [MediaType.APPLICATION_NDJSON_VALUE])
@@ -34,23 +48,10 @@ class AdminController {
         @RequestHeader("Authorization") authorizationHeader: String
     ): ResponseEntity<TurnstileValidationDTO?> {
         val turnstileValidationDTO: TurnstileValidationDTO? = turnstileService.getTurnstileValidationByTicketId(ticketId)
-        return if(turnstileValidationDTO != null)
+        return if (turnstileValidationDTO != null)
             ResponseEntity.ok(turnstileValidationDTO)
         else
             ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
-    }
-
-    @PostMapping("/registerTurnstile", produces = [MediaType.APPLICATION_NDJSON_VALUE])
-    suspend fun registerTurnstilePost(
-        @RequestBody turnstileDTO: TurnstileDTO,
-        @RequestHeader("Authorization") authorizationHeader: String
-    ): ResponseEntity<TurnstileDTO?> {
-        try {
-            turnstileService.addTurnstile(turnstileDTO)
-        }catch(ex: Exception){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
-        }
-        return ResponseEntity.status(HttpStatus.CREATED).body(turnstileDTO)
     }
 
     @GetMapping("/transitCount", produces = [MediaType.APPLICATION_NDJSON_VALUE])

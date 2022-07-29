@@ -5,7 +5,7 @@ import org.springframework.data.relational.core.mapping.Table
 import java.sql.Timestamp
 
 @Table("orders")
-data class Order (
+data class Order(
     @Id
     val id: Long?,
     val ticketId: Long,

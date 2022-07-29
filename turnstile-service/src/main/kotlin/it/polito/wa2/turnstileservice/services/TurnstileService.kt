@@ -5,9 +5,9 @@ import kotlinx.coroutines.flow.Flow
 import java.time.LocalDateTime
 
 interface TurnstileService {
-    suspend fun addTurnstile(turnstileDTO: TurnstileDTO):TurnstileDTO
-    suspend fun getTurnstileById(turnstileId: Long): TurnstileDTO?
     suspend fun validateTicket(ticketQrDTO: TicketQrDTO, loggedTurnstileId: Long, authorizationHeader: String): Boolean
+    suspend fun getTurnstileDetails(turnstileId: Long): TurnstileDetailsDTO?
+    suspend fun addTurnstileDetails(turnstileDetailsDTO: TurnstileDetailsDTO): TurnstileDetailsDTO
     suspend fun getTurnstileValidationByTicketId(ticketId: Long): TurnstileValidationDTO?
     suspend fun getTurnstileTransitCount(turnstileId: Long): TurnstileActivityDTO
     suspend fun getAllTurnstilesTransitCount(): TurnstileActivityDTO
