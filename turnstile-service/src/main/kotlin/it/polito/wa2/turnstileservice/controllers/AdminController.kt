@@ -27,19 +27,31 @@ class AdminController {
         return ResponseEntity.ok(retrievedTurnstileDetailsDTO)
     }
 
-    @PostMapping("/turnstiles/info")
+    @PostMapping("/turnstiles/{turnstileId}/info")
     suspend fun turnstileInfoPost(
+        @PathVariable("turnstileId") turnstileId: Long,
         @RequestBody turnstileDetailsDTO: TurnstileDetailsDTO,
         @RequestHeader("Authorization") authorizationHeader: String
     ): ResponseEntity<TurnstileDetailsDTO?> {
         return try {
+            if (turnstileId != turnstileDetailsDTO.turnstileId)
+                ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
             val newTurnstileDetailsDTO =
-                turnstileService.addTurnstileDetails(turnstileDetailsDTO)
+                turnstileService.addTurnstileDetails(turnstileId, turnstileDetailsDTO.zid)
             ResponseEntity.status(HttpStatus.CREATED).body(newTurnstileDetailsDTO)
         } catch (ex: Exception) {
             println(ex.localizedMessage)
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
         }
+    }
+
+    @GetMapping("/turnstiles/validations", produces = [MediaType.APPLICATION_NDJSON_VALUE])
+    suspend fun turnstilesValidationsGet(
+        @RequestHeader("Authorization") authorizationHeader: String
+    ): ResponseEntity<Flow<TurnstileValidationDTO>> {
+        val retrievedTurnstilesValidations =
+            turnstileService.getTurnstilesValidations()
+        return ResponseEntity.ok(retrievedTurnstilesValidations)
     }
 
     @GetMapping("/turnstiles/{turnstileId}/validations", produces = [MediaType.APPLICATION_NDJSON_VALUE])
@@ -48,17 +60,28 @@ class AdminController {
         @RequestHeader("Authorization") authorizationHeader: String
     ): ResponseEntity<Flow<TurnstileValidationDTO>> {
         val retrievedTurnstileValidations =
-            turnstileService.getTurnstileValidationsByTurnstileId(turnstileId)
+            turnstileService.getTurnstileValidations(turnstileId)
         return ResponseEntity.ok(retrievedTurnstileValidations)
     }
 
     @GetMapping("/turnstiles/validations/{ticketId}")
-    suspend fun turnstileTicketValidationGet(
+    suspend fun turnstilesTicketValidationGet(
         @PathVariable("ticketId") ticketId: Long,
         @RequestHeader("Authorization") authorizationHeader: String
     ): ResponseEntity<TurnstileValidationDTO?> {
         val turnstileValidationDTO =
-            turnstileService.getTurnstilesValidationByTicketId(ticketId)
+            turnstileService.getTurnstilesValidation(ticketId)
+        return ResponseEntity.ok(turnstileValidationDTO)
+    }
+
+    @GetMapping("/turnstiles/{turnstileId}/validations/{ticketId}")
+    suspend fun turnstileTicketValidationGet(
+        @PathVariable("turnstileId") turnstileId: Long,
+        @PathVariable("ticketId") ticketId: Long,
+        @RequestHeader("Authorization") authorizationHeader: String
+    ): ResponseEntity<TurnstileValidationDTO?> {
+        val turnstileValidationDTO =
+            turnstileService.getTurnstilesValidation(ticketId)
         return ResponseEntity.ok(turnstileValidationDTO)
     }
 

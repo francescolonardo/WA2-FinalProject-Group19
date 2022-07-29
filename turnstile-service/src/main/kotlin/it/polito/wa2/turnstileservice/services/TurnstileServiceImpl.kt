@@ -85,31 +85,45 @@ class TurnstileServiceImpl: TurnstileService {
     }
 
     override suspend fun addTurnstileDetails(
-        turnstileDetailsDTO: TurnstileDetailsDTO
+        turnstileId: Long,
+        zid: String
     ): TurnstileDetailsDTO {
         val retrievedTurnstileDetails =
-            turnstileRepository.findByTurnstileId(turnstileDetailsDTO.turnstileId)
+            turnstileRepository.findByTurnstileId(turnstileId)
         if (retrievedTurnstileDetails != null)
             throw TurnstileException("zid already assigned to this turnstile")
         return turnstileRepository.save(
             TurnstileDetails().apply {
-                this.turnstileId = turnstileDetailsDTO.turnstileId
-                this.zid = turnstileDetailsDTO.zid
+                this.turnstileId = turnstileId
+                this.zid = zid
             }
         ).toDTO()
     }
 
-    override suspend fun getTurnstileValidationsByTurnstileId(
+    override suspend fun getTurnstilesValidations(): Flow<TurnstileValidationDTO> {
+        return turnstileValidationRepository.findAll()
+            .map { turnstileValidation -> turnstileValidation.toDTO() }
+    }
+
+    override suspend fun getTurnstileValidations(
         turnstileId: Long
     ): Flow<TurnstileValidationDTO> {
         return turnstileValidationRepository.findByTurnstileId(turnstileId)
             .map { turnstileValidation -> turnstileValidation.toDTO() }
     }
 
-    override suspend fun getTurnstilesValidationByTicketId(
+    override suspend fun getTurnstilesValidation(
         ticketId: Long
     ): TurnstileValidationDTO? {
         return turnstileValidationRepository.findByTicketId(ticketId)
+            ?.toDTO()
+    }
+
+    override suspend fun getTurnstilesValidation(
+        turnstileId: Long,
+        ticketId: Long
+    ): TurnstileValidationDTO? {
+        return turnstileValidationRepository.findByTurnstileIdAndTicketId(turnstileId, ticketId)
             ?.toDTO()
     }
 

@@ -10,6 +10,7 @@ import java.time.LocalDateTime
 interface TurnstileValidationRepository: CoroutineCrudRepository<TurnstileValidation, Long>{
     fun findByTurnstileId(turnstileId: Long): Flow<TurnstileValidation>
     suspend fun findByTicketId(ticketId: Long): TurnstileValidation?
+    suspend fun findByTurnstileIdAndTicketId(turnstileId: Long, ticketId: Long): TurnstileValidation?
     suspend fun countByTurnstileId(turnstileId: Long): Long
     suspend fun countByDateTimeBetween(startDate: LocalDateTime, endDate: LocalDateTime): Long
     suspend fun countByTurnstileIdAndDateTimeBetween(turnstileId: Long, startDate: LocalDateTime, endDate: LocalDateTime): Long

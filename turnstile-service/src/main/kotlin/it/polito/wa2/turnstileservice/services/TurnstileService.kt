@@ -7,9 +7,11 @@ import java.time.LocalDateTime
 interface TurnstileService {
     suspend fun validateTicket(loggedTurnstileId: Long, ticketQRDTO: TicketQRDTO, authorizationHeader: String): Boolean
     suspend fun getTurnstileDetails(turnstileId: Long): TurnstileDetailsDTO?
-    suspend fun addTurnstileDetails(turnstileDetailsDTO: TurnstileDetailsDTO): TurnstileDetailsDTO
-    suspend fun getTurnstileValidationsByTurnstileId(turnstileId: Long): Flow<TurnstileValidationDTO>
-    suspend fun getTurnstilesValidationByTicketId(ticketId: Long): TurnstileValidationDTO?
+    suspend fun addTurnstileDetails(turnstileId: Long, zid: String): TurnstileDetailsDTO
+    suspend fun getTurnstilesValidations(): Flow<TurnstileValidationDTO>
+    suspend fun getTurnstileValidations(turnstileId: Long): Flow<TurnstileValidationDTO>
+    suspend fun getTurnstilesValidation(ticketId: Long): TurnstileValidationDTO?
+    suspend fun getTurnstilesValidation(turnstileId: Long, ticketId: Long): TurnstileValidationDTO?
     suspend fun getAllTurnstilesActivity(): Long
     suspend fun getTurnstileActivity(turnstileId: Long): Long
     suspend fun getAllTurnstilesActivityPeriod(startDate: LocalDateTime, endDate: LocalDateTime): Long

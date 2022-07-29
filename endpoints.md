@@ -624,7 +624,7 @@
 
 ---
 
-- POST `/admin/turnstiles/info`
+- POST `/admin/turnstiles/{turnstileId}/info`
 
   - request body:
     ```json
@@ -638,6 +638,32 @@
 	{
 		"turnstile_id": 1,
 		"zid": "A"
+	}
+	```
+
+---
+
+- GET `/admin/turnstiles/validations`
+
+  - response body [200 OK]:
+    ```json
+	{
+		"id": 1,
+		"turnstile_id": 1,
+		"ticket_id": 5,
+		"date_time": "2022-07-29T19:12:11.781294"
+	},
+	{
+		"id": 2,
+		"turnstile_id": 1,
+		"ticket_id": 6,
+		"date_time": "2022-07-29T19:13:10.657834"
+	},
+	{
+		"id": 3,
+		"turnstile_id": 1,
+		"ticket_id": 7,
+		"date_time": "2022-07-29T19:15:01.783334"
 	}
 	```
 
@@ -658,12 +684,27 @@
 		"turnstile_id": 1,
 		"ticket_id": 6,
 		"date_time": "2022-07-29T19:13:10.657834"
-	},
+	}
 	```
 
 ---
 
 - GET `/admin/turnstiles/validations/{ticketId}`
+
+  - response body [200 OK]:
+    ```json
+	{
+		"id": 1,
+		"turnstile_id": 1,
+		"ticket_id": 5,
+		"date_time": "2022-07-29T19:12:11.781294"
+	}
+	```
+
+---
+
+
+- GET `/admin/turnstiles/{turnstileId}/validations/{ticketId}`
 
   - response body [200 OK]:
     ```json
