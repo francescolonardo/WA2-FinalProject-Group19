@@ -1,5 +1,6 @@
 package it.polito.wa2.turnstileservice.security
 
+import it.polito.wa2.turnstileservice.dtos.JwtSubjectInfoDTO
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -28,7 +29,7 @@ class JwtAuthFilter(
             return chain.filter(exchange)
         }
 
-        val userRoles: JwtUtils.UserRoles = jwtUtils.getDetailsJwt(authorizationToken)
+        val userRoles: JwtSubjectInfoDTO = jwtUtils.getDetailsJwt(authorizationToken)
         var authorities: Collection<SimpleGrantedAuthority> = ArrayList()
         userRoles.roles.forEach { role ->
             authorities += SimpleGrantedAuthority(role.toString())

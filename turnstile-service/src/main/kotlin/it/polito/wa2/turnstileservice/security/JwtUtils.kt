@@ -28,14 +28,11 @@ class JwtUtils(base64Key: String) {
         return true
     }
 
-    data class UserRoles(val id : Long, val roles : Set<Role>)
-
-    fun getDetailsJwt(authToken: String?): UserRoles {
+    fun getDetailsJwt(authToken: String?): JwtSubjectInfoDTO {
         val decodedJwt = Jwts.parserBuilder()
             .setSigningKey(signatureKey)
             .build()
             .parseClaimsJws(authToken)
-
         val id = decodedJwt.body["sub"] as String
         val rolesString: List<String> = decodedJwt.body["roles"] as List<String>
         val roles: MutableSet<Role> = mutableSetOf()
@@ -46,7 +43,7 @@ class JwtUtils(base64Key: String) {
                 else -> Role.ADMIN
             }
         }
-        return UserRoles(id.toLong(), roles)
+        return JwtSubjectInfoDTO(id.toLong(), roles)
     }
 
     fun getDetailsJwtTicket(authToken: String?): TicketDTO {
@@ -58,14 +55,12 @@ class JwtUtils(base64Key: String) {
         val iat = decodedJwt.body["iat"] as Int
         val exp = decodedJwt.body["exp"] as Int
         val zid = decodedJwt.body["zid"] as String
-        val used = false // TODO: remove this, and remove used field
         val username = decodedJwt.body["username"] as String
         return TicketDTO(
             sub.toLong(),
             Timestamp(iat.toLong()),
             Timestamp(exp.toLong()),
             zid,
-            used,
             username
         )
     }
