@@ -594,4 +594,53 @@
 	```
 
 ---
+
+# turnstile-service
+
+- POST `/turnstile/validate`
+
+  - request body:
+    ```json
+	{
+		"qrcode": "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQAAAAB0CZXLAAACv0lEQVR4Xu2XbWokMQwFDX0tg69u8LUM3ipp2PlYSP5sxC60QyY97go8pPfk7na+We1z43PdQK4byHUDuf4VYLfWer/OvHbvXvY+NhdtFALjbLbG4nPNHkTrw/06wK/72g3kmmMt5M5kaoGFJO6vc5Z/VmzWAjZpTDtkx+hcNRDNwi6NMm3v0Tk3K4Ew7ef6w9Wf668Cro1IFLahXD8e+1UA27YphbVutygam1JFwJnNtOjZiV/4mbh2lgLhT6MbfWOG4BlVRrWKAFTaHjvkTXt2md+4VQVsR1jk1exCWjjnWR2wQ5xRZZcrW8UwfWlWBYBnh8XKAUadsMvCRnUA4ljTE81qAYAhXNllwNoODo2rSi/j++W9IoD9EycqYu0XO9e7YQqAjqDpJH2MsEfFeiEQlpXpOEWVutjyVQJnog2JADvQeOgKjXXAzrDwm8Mrn3KKAQ+zTpW8YIgToxhnhUDkxim+nKJDr7ADXwhMFTLCu1K90jx0rhDYSiI3GnboFVo1x8MxRUA0K4yqzOhVtq8QoFfLwIxMELWKwj2bVQGQ24uRwZHCroCdcq8SWM4xxpZaQQzO5fFeBxzm6LBE5ocALbtmfgoBL3Dp0idOs2jea3grACX5XBXpiRcR0vtm2h8H0qruc5g51emdimMVAVbHd57s0yO7OnfUAUe7hk1X3Gimpqu6DmCQOrz4yPeg7kDzXwqBTG54xcPF/Nqu/SxUBYBl0jN5mC3vvjarAIgBFumlOhDOEc8V7xUBDq/m42ZGFqnb5pmjMsAFQb1QKk2lfNpphUBENwplXsaxWgbome4CYJAd5ne/1BZdSqmnEAh3RGlokupYpvm3yCKAaeHRns7lhdAYFQMOrvxZTg/i098L9dOAzaJUM0ap35qj5PJ+GdBskTPc5KqYE85DbtQBX64byHUDuW4g138B/AI6JKisI22ShwAAAABJRU5ErkJggg=="
+	}
+	```
+  - response body [200 OK]:
+    ```json
+	true
+	```
+
+---
+
+- GET `/admin/turnstile/info`
+
+  - request params:
+    - `turnstileId`: Long (e.g. `1`)
+  - response body [200 OK]:
+    ```json
+	{
+		"turnstile_id": 1,
+		"zid": "A"
+	}
+	```
+
+---
+
+- POST `/admin/turnstile/info`
+
+  - request body:
+    ```json
+	{
+		"turnstile_id": 1,
+		"zid": "A"
+	}
+	```
+  - response body [200 OK]:
+     ```json
+	{
+		"turnstile_id": 1,
+		"zid": "A"
+	}
+	```
+
 ---
