@@ -22,7 +22,7 @@ class TurnstileServiceImpl: TurnstileService {
     @Value("\${jwt.authorization.signature-key-base64}")
     private lateinit var jwtSecretB64Key: String
     @Value("\${jwt.authorization.expiration-time-ms}")
-    private lateinit var jwtExpirationTimeMs: String
+    private var jwtExpirationTimeMs: Int = 0
 
     private fun checkPasswordStrength(password: String): Boolean {
         val passwordRegex = Regex(
@@ -62,7 +62,7 @@ class TurnstileServiceImpl: TurnstileService {
             .setHeaderParam("typ", "JWT")
             .setSubject(turnstileDTO.id.toString())
             .setIssuedAt(Date(System.currentTimeMillis()))
-            .setExpiration(Date(System.currentTimeMillis() + jwtExpirationTimeMs.toInt()))
+            .setExpiration(Date(System.currentTimeMillis() + jwtExpirationTimeMs))
             .claim("roles", mutableSetOf(Role.EMBEDDED))
             .signWith(jwtSecretKey)
             .compact()

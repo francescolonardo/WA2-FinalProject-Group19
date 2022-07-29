@@ -1,7 +1,7 @@
 package it.polito.wa2.turnstileservice.dtos
 
 class JwtSubjectInfoDTO(
-    val id: Long? = null,
+    val usernameId: String = "",
     val roles: Set<Role> = mutableSetOf()
 )
 

@@ -33,6 +33,7 @@ class JwtUtils(base64Key: String) {
             .setSigningKey(signatureKey)
             .build()
             .parseClaimsJws(authToken)
+        val usernameId = decodedJwt.body["sub"] as String
         val rolesString: List<String> = decodedJwt.body["roles"] as List<String>
         val roles: MutableSet<Role> = mutableSetOf()
         rolesString.map { roleString ->
@@ -42,7 +43,7 @@ class JwtUtils(base64Key: String) {
                 else -> Role.ADMIN
             }
         }
-        return JwtSubjectInfoDTO(null, roles)
+        return JwtSubjectInfoDTO(usernameId, roles)
     }
 
     fun getDetailsJwtTicket(authToken: String?): TicketDTO {

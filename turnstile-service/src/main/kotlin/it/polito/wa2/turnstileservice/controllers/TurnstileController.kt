@@ -22,7 +22,7 @@ class TurnstileController {
     ): ResponseEntity<Boolean> {
         val validationResult =
             turnstileService.validateTicket(
-                1,// loggedTurnstile.name.toLong(), // TODO: fix this
+                loggedTurnstile.name.toLong(),
                 ticketQRDTO,
                 authorizationHeader
             )

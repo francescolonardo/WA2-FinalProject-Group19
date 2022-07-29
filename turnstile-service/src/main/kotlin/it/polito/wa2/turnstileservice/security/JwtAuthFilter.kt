@@ -34,8 +34,7 @@ class JwtAuthFilter(
         jwtSubjectInfoDTO.roles.forEach { role ->
             authorities += SimpleGrantedAuthority(role.toString())
         }
-        // TODO: fix this (principal: null)
-        val authentication = UsernamePasswordAuthenticationToken(null, null, authorities)
+        val authentication = UsernamePasswordAuthenticationToken(jwtSubjectInfoDTO.usernameId, null, authorities)
 
         return chain.filter(exchange).contextWrite {
             ReactiveSecurityContextHolder.withAuthentication(authentication)
