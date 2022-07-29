@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS turnstile_details(
 CREATE TABLE IF NOT EXISTS turnstile_validation(
     id                  BIGSERIAL,
     turnstile_id        BIGINT,
-    ticket_sub          BIGINT,
+    ticket_id           BIGINT,
     username            VARCHAR(20),
     date_time           TIMESTAMP,
     PRIMARY KEY(id)

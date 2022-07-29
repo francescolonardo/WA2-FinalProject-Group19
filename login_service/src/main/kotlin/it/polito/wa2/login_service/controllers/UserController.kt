@@ -29,7 +29,7 @@ class UserController {
      * otherwise, it returns a status code 400 (bad request) and a null body
      */
     @PostMapping("/register")
-    fun userRegistration(@RequestBody userDTO: TravelerDTO): ResponseEntity<Any?> {
+    fun userRegistration(@RequestBody userDTO: TravelerDTO): ResponseEntity<Any> {
         return try {
             val activationOutputDTO = userService.registerTraveler(userDTO.username, userDTO.password, userDTO.email)
             ResponseEntity.status(HttpStatus.ACCEPTED).body(activationOutputDTO)
@@ -50,7 +50,7 @@ class UserController {
      * otherwise, it returns a status code 404 (not found) and a null body
      */
     @PostMapping("/validate")
-    fun userValidation(@RequestBody activationDTO: ActivationDTO): ResponseEntity<Any?> {
+    fun userValidation(@RequestBody activationDTO: ActivationDTO): ResponseEntity<Any> {
         return try {
             val travelerOutputDTO = userService.validateTraveler(
                 activationDTO.provisionalId,
@@ -76,7 +76,7 @@ class UserController {
     fun userValidation(
         @RequestParam("provisional_id") provisionalId: UUID,
         @RequestParam("activation_code") activationCode: String
-    ): ResponseEntity<Any?> {
+    ): ResponseEntity<Any> {
         return try {
             println(provisionalId)
             println(activationCode)
@@ -98,7 +98,7 @@ class UserController {
      *
      */
     @PostMapping("/login")
-    fun userLogin(@RequestBody userLoginDTO: UserLoginDTO): ResponseEntity<Any?> {
+    fun userLogin(@RequestBody userLoginDTO: UserLoginDTO): ResponseEntity<Any> {
         return try {
             val authorizationTokenDTO = userService.loginUser(userLoginDTO.username, userLoginDTO.password)
             ResponseEntity.ok(authorizationTokenDTO)

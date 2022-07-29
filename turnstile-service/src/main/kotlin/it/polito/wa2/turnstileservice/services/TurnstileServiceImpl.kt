@@ -7,11 +7,8 @@ import it.polito.wa2.turnstileservice.exceptions.TurnstileException
 import it.polito.wa2.turnstileservice.repositories.TurnstileRepository
 import it.polito.wa2.turnstileservice.repositories.TurnstileValidationRepository
 import it.polito.wa2.turnstileservice.security.JwtUtils
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -48,11 +45,11 @@ class TurnstileServiceImpl: TurnstileService {
     }
 
     override suspend fun validateTicket(
-        ticketQrDTO: TicketQrDTO,
         loggedTurnstileId: Long,
+        ticketQRDTO: TicketQRDTO,
         authorizationHeader: String
     ): Boolean {
-        val ticketJwt = ticketQrDTO.decodeQRCode()
+        val ticketJwt = ticketQRDTO.decodeQRCode()
             ?: return false
         val jwtUtils = JwtUtils(jwtTicketsSecretB64Key)
         val validation = jwtUtils.validateJwt(ticketJwt)
@@ -67,7 +64,7 @@ class TurnstileServiceImpl: TurnstileService {
                 turnstileValidationRepository.save(
                     TurnstileValidation().apply {
                         this.turnstileId = loggedTurnstileId
-                        this.ticketSub = ticketDTO.sub
+                        this.ticketId = ticketDTO.sub
                         this.username = ticketDTO.username
                         this.dateTime = LocalDateTime.now()
                     }
@@ -102,69 +99,57 @@ class TurnstileServiceImpl: TurnstileService {
         ).toDTO()
     }
 
-    override suspend fun getTurnstileValidationByTicketId(ticketId: Long): TurnstileValidationDTO? {
-        return withContext(Dispatchers.IO) {
-            turnstileValidationRepository.getTurnstileValidationByTicketId(ticketId)
-        }.firstOrNull()?.toDTO()
+    override suspend fun getTurnstileValidationsByTurnstileId(
+        turnstileId: Long
+    ): Flow<TurnstileValidationDTO> {
+        return turnstileValidationRepository.findByTurnstileId(turnstileId)
+            .map { turnstileValidation -> turnstileValidation.toDTO() }
     }
 
-    override suspend fun getTurnstileTransitCount(turnstileId: Long): TurnstileActivityDTO {
-        return withContext(Dispatchers.IO) {
-            TurnstileActivityDTO().apply{
-                this.turnstileId = turnstileId
-                this.count = turnstileValidationRepository.getTurnstileTransitCount(turnstileId).firstOrNull() ?: 0
-            }
-        }
+    override suspend fun getTurnstilesValidationByTicketId(
+        ticketId: Long
+    ): TurnstileValidationDTO? {
+        return turnstileValidationRepository.findByTicketId(ticketId)
+            ?.toDTO()
     }
 
-    override suspend fun getAllTurnstilesTransitCount(): TurnstileActivityDTO {
-        return withContext(Dispatchers.IO) {
-            TurnstileActivityDTO().apply {
-                this.turnstileId = null
-                this.count = turnstileValidationRepository.getAllTurnstilesTransitCount().firstOrNull() ?: 0
-            }
-        }
+    override suspend fun getAllTurnstilesActivity(): Long {
+        return turnstileValidationRepository.count()
     }
 
-    override suspend fun getTurnstileTransitCountPeriod(turnstileId: Long, startPeriod: LocalDateTime, endPeriod: LocalDateTime): TurnstileActivityDTO {
-        return withContext(Dispatchers.IO) {
-            TurnstileActivityDTO().apply{
-                this.turnstileId = turnstileId
-                this.count = turnstileValidationRepository.getTurnstileTransitCountPeriod(turnstileId,startPeriod,endPeriod).firstOrNull() ?: 0
-            }
-        }
+    override suspend fun getTurnstileActivity(turnstileId: Long): Long {
+        return turnstileValidationRepository.countByTurnstileId(turnstileId)
     }
 
-    override suspend fun getAllTurnstilesTransitCountPeriod(startPeriod: LocalDateTime, endPeriod: LocalDateTime): TurnstileActivityDTO {
-        return withContext(Dispatchers.IO) {
-            TurnstileActivityDTO().apply{
-                this.turnstileId = null
-                this.count = turnstileValidationRepository.getAllTurnstilesTransitCountPeriod(startPeriod,endPeriod).firstOrNull() ?: 0
-            }
-        }
+    override suspend fun getAllTurnstilesActivityPeriod(
+        startDate: LocalDateTime,
+        endDate: LocalDateTime
+    ): Long {
+        return turnstileValidationRepository.countByDateTimeBetween(startDate, endDate)
     }
 
-    override suspend fun getUserTransitCount(username: String): UserActivityDTO{
-        return withContext(Dispatchers.IO) {
-            UserActivityDTO().apply{
-                this.username = username
-                this.count = turnstileValidationRepository.getUserTransitCount(username).firstOrNull() ?: 0
-            }
-        }
+    override suspend fun getTurnstileActivityPeriod(
+        turnstileId: Long,
+        startDate: LocalDateTime,
+        endDate: LocalDateTime
+    ): Long {
+        return turnstileValidationRepository.countByTurnstileIdAndDateTimeBetween(turnstileId, startDate, endDate)
     }
 
-    override suspend fun getUserTransitCountPeriod(username: String, startPeriod: LocalDateTime, endPeriod: LocalDateTime): UserActivityDTO{
-        return withContext(Dispatchers.IO) {
-            UserActivityDTO().apply{
-                this.username = username
-                this.count = turnstileValidationRepository.getUserTransitCountPeriod(username,startPeriod,endPeriod).firstOrNull() ?: 0
-            }
-        }
+    override suspend fun getUserActivity(username: String): Long {
+        return turnstileValidationRepository.countByUsername(username)
     }
 
-    override suspend fun getAllUserTransits(username: String): Flow<TurnstileValidationDTO?> {
-       return withContext(Dispatchers.IO) {
-           turnstileValidationRepository.getAllUserTransits(username).map { e -> e?.toDTO() }
-       }
+    override suspend fun getUserActivityPeriod(
+        username: String,
+        startPeriod: LocalDateTime,
+        endPeriod: LocalDateTime
+    ): Long {
+        return turnstileValidationRepository.countByUsernameAndDateTimeBetween(username,startPeriod,endPeriod)
+    }
+
+    override fun getAllUserTransits(username: String): Flow<TurnstileValidationDTO?> {
+        return turnstileValidationRepository.findAllByUsername(username)
+            .map { turnstileValidation -> turnstileValidation?.toDTO() }
     }
 }

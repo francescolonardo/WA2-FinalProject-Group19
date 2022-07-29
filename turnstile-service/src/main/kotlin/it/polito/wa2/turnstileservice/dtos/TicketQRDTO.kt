@@ -11,7 +11,7 @@ import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import javax.imageio.ImageIO
 
-data class TicketQrDTO(
+data class TicketQRDTO(
     @JsonProperty("qrcode") var qrCode: String
 ) {
     fun decodeQRCode(): String? {

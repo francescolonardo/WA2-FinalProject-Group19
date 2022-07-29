@@ -612,10 +612,8 @@
 
 ---
 
-- GET `/admin/turnstile/info`
+- GET `/admin/turnstiles/{turnstileId}/info`
 
-  - request params:
-    - `turnstileId`: Long (e.g. `1`)
   - response body [200 OK]:
     ```json
 	{
@@ -626,7 +624,7 @@
 
 ---
 
-- POST `/admin/turnstile/info`
+- POST `/admin/turnstiles/info`
 
   - request body:
     ```json
@@ -643,4 +641,128 @@
 	}
 	```
 
+---
+
+- GET `/admin/turnstiles/{turnstileId}/validations`
+
+  - response body [200 OK]:
+    ```json
+	{
+		"id": 1,
+		"turnstile_id": 1,
+		"ticket_id": 5,
+		"date_time": "2022-07-29T19:12:11.781294"
+	},
+	{
+		"id": 2,
+		"turnstile_id": 1,
+		"ticket_id": 6,
+		"date_time": "2022-07-29T19:13:10.657834"
+	},
+	```
+
+---
+
+- GET `/admin/turnstiles/validations/{ticketId}`
+
+  - response body [200 OK]:
+    ```json
+	{
+		"id": 1,
+		"turnstile_id": 1,
+		"ticket_id": 5,
+		"date_time": "2022-07-29T19:12:11.781294"
+	}
+	```
+
+---
+
+- GET `/admin/turnstiles/activity`
+
+  - response body [200 OK]:
+    ```json
+	{
+		"count": 2
+	}
+	```
+	
+---
+
+- GET `/admin/turnstiles/{turnstileId}/activity`
+
+  - response body [200 OK]:
+    ```json
+	{
+		"count": 1
+	}
+	```
+	
+---
+
+- GET `/admin/turnstiles/activity/date`
+
+  - request params:
+    - `start`: Date (e.g. `2022-01-01`)
+	- `end`: Date (e.g. `2022-12-31`)
+  - response body [200 OK]:
+    ```json
+	{
+		"count": 2
+	}
+	```
+	
+---
+
+- GET `/admin/turnstiles/{turnstileId}/activity/date`
+
+  - request params:
+    - `start`: Date (e.g. `2022-01-01`)
+	- `end`: Date (e.g. `2022-12-31`)
+  - response body [200 OK]:
+    ```json
+	{
+		"count": 1
+	}
+	```
+	
+---
+
+- GET `/admin/users/{username}/activity`
+
+  - response body [200 OK]:
+    ```json
+	{
+		"count": 1
+	}
+	```
+	
+---
+
+- GET `/admin/users/{username}/activity/date`
+
+  - request params:
+    - `start`: Date (e.g. `2022-01-01`)
+	- `end`: Date (e.g. `2022-12-31`)
+  - response body [200 OK]:
+    ```json
+	{
+		"count": 1
+	}
+	```
+	
+---
+
+- GET `/admin/users/{username}/transits`
+
+  - response body [200 OK]:
+    ```json
+	{
+        "id": 1,
+        "turnstile_id": 1,
+        "ticket_id": 15,
+        "date_time": "2022-07-30T00:06:49.733024"
+    }
+	```
+	
+---
 ---

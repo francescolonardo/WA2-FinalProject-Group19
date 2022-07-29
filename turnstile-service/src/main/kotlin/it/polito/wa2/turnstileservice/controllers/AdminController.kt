@@ -8,8 +8,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import java.sql.Date
+import java.sql.Timestamp
 
 @RestController
 @RequestMapping("/admin/")
@@ -17,9 +17,9 @@ class AdminController {
     @Autowired
     lateinit var turnstileService: TurnstileService
 
-    @GetMapping("/turnstile/info")
+    @GetMapping("/turnstiles/{turnstileId}/info")
     suspend fun turnstileInfoGet(
-        @RequestParam("turnstileId") turnstileId: Long,
+        @PathVariable("turnstileId") turnstileId: Long,
         @RequestHeader("Authorization") authorizationHeader: String
     ): ResponseEntity<TurnstileDetailsDTO?> {
         val retrievedTurnstileDetailsDTO =
@@ -27,7 +27,7 @@ class AdminController {
         return ResponseEntity.ok(retrievedTurnstileDetailsDTO)
     }
 
-    @PostMapping("/turnstile/info")
+    @PostMapping("/turnstiles/info")
     suspend fun turnstileInfoPost(
         @RequestBody turnstileDetailsDTO: TurnstileDetailsDTO,
         @RequestHeader("Authorization") authorizationHeader: String
@@ -42,84 +42,101 @@ class AdminController {
         }
     }
 
-    @GetMapping("/turnstileValidation", produces = [MediaType.APPLICATION_NDJSON_VALUE])
-    suspend fun turnstileValidationGet(
-        @RequestParam("ticketId") ticketId: Long,
+    @GetMapping("/turnstiles/{turnstileId}/validations", produces = [MediaType.APPLICATION_NDJSON_VALUE])
+    suspend fun turnstileValidationsGet(
+        @PathVariable("turnstileId") turnstileId: Long,
+        @RequestHeader("Authorization") authorizationHeader: String
+    ): ResponseEntity<Flow<TurnstileValidationDTO>> {
+        val retrievedTurnstileValidations =
+            turnstileService.getTurnstileValidationsByTurnstileId(turnstileId)
+        return ResponseEntity.ok(retrievedTurnstileValidations)
+    }
+
+    @GetMapping("/turnstiles/validations/{ticketId}")
+    suspend fun turnstileTicketValidationGet(
+        @PathVariable("ticketId") ticketId: Long,
         @RequestHeader("Authorization") authorizationHeader: String
     ): ResponseEntity<TurnstileValidationDTO?> {
-        val turnstileValidationDTO: TurnstileValidationDTO? = turnstileService.getTurnstileValidationByTicketId(ticketId)
-        return if (turnstileValidationDTO != null)
-            ResponseEntity.ok(turnstileValidationDTO)
-        else
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
+        val turnstileValidationDTO =
+            turnstileService.getTurnstilesValidationByTicketId(ticketId)
+        return ResponseEntity.ok(turnstileValidationDTO)
     }
 
-    @GetMapping("/transitCount", produces = [MediaType.APPLICATION_NDJSON_VALUE])
-    suspend fun turnstileTransitCountGet(
-        @RequestParam("turnstileId") turnstileId: Long,
-        @RequestHeader("Authorization") authorizationHeader: String
-    ): ResponseEntity<TurnstileActivityDTO?> {
-        return ResponseEntity.ok(turnstileService.getTurnstileTransitCount(turnstileId))
-    }
-
-    @GetMapping("/transitCountAll", produces = [MediaType.APPLICATION_NDJSON_VALUE])
+    @GetMapping("/turnstiles/activity")
     suspend fun allTurnstilesTransitCountGet(
         @RequestHeader("Authorization") authorizationHeader: String
-    ): ResponseEntity<TurnstileActivityDTO?> {
-        return ResponseEntity.ok(turnstileService.getAllTurnstilesTransitCount())
+    ): ResponseEntity<Any> {
+        val activity = HashMap<String, Long>()
+        activity["count"] = turnstileService.getAllTurnstilesActivity()
+        return ResponseEntity.ok(activity)
     }
 
-    //Used date format -> 2021-07-24T23:29:47.738750
-    @GetMapping("/transitCountPeriod", produces = [MediaType.APPLICATION_NDJSON_VALUE])
-    suspend fun turnstileTransitCountPeriodGet(
-        @RequestParam("turnstileId")
-        turnstileId: Long,
-        @RequestParam("startPeriod")
-        startPeriod: String,
-        @RequestParam("endPeriod")
-        endPeriod: String,
+    @GetMapping("/turnstiles/{turnstileId}/activity")
+    suspend fun turnstileTransitCountGet(
+        @PathVariable("turnstileId") turnstileId: Long,
         @RequestHeader("Authorization") authorizationHeader: String
-    ): ResponseEntity<TurnstileActivityDTO?> {
-        return ResponseEntity.ok(turnstileService.getTurnstileTransitCountPeriod(turnstileId, LocalDateTime.parse(startPeriod, DateTimeFormatter.ISO_LOCAL_DATE_TIME), LocalDateTime.parse(endPeriod, DateTimeFormatter.ISO_LOCAL_DATE_TIME)))
+    ): ResponseEntity<Any> {
+        val activity = HashMap<String, Long>()
+        activity["count"] = turnstileService.getTurnstileActivity(turnstileId)
+        return ResponseEntity.ok(activity)
     }
 
-    @GetMapping("/transitCountPeriodAll", produces = [MediaType.APPLICATION_NDJSON_VALUE])
+    @GetMapping("/turnstiles/activity/date")
     suspend fun allTurnstilesTransitCountPeriodGet(
-        @RequestParam("startPeriod")
-        startPeriod: String,
-        @RequestParam("endPeriod")
-        endPeriod: String,
+        @RequestParam("start") startDate: Date,
+        @RequestParam("end") endDate: Date,
         @RequestHeader("Authorization") authorizationHeader: String
-    ): ResponseEntity<TurnstileActivityDTO?> {
-        return ResponseEntity.ok(turnstileService.getAllTurnstilesTransitCountPeriod(LocalDateTime.parse(startPeriod, DateTimeFormatter.ISO_LOCAL_DATE_TIME), LocalDateTime.parse(endPeriod, DateTimeFormatter.ISO_LOCAL_DATE_TIME)))
+    ): ResponseEntity<Any> {
+        val startDateTime = Timestamp(startDate.time).toLocalDateTime()
+        val endDateTime = Timestamp(endDate.time).toLocalDateTime()
+        val activity = HashMap<String, Long>()
+        activity["count"] =
+            turnstileService.getAllTurnstilesActivityPeriod(startDateTime, endDateTime)
+        return ResponseEntity.ok(activity)
     }
 
-    @GetMapping("/userTransitCount", produces = [MediaType.APPLICATION_NDJSON_VALUE])
+    @GetMapping("/turnstiles/{turnstileId}/activity/date")
+    suspend fun turnstileTransitCountPeriodGet(
+        @PathVariable("turnstileId") turnstileId: Long,
+        @RequestParam("start") startDate: Date,
+        @RequestParam("end") endDate: Date,
+        @RequestHeader("Authorization") authorizationHeader: String
+    ): ResponseEntity<Any> {
+        val startDateTime = Timestamp(startDate.time).toLocalDateTime()
+        val endDateTime = Timestamp(endDate.time).toLocalDateTime()
+        val activity = HashMap<String, Long>()
+        activity["count"] =
+            turnstileService.getTurnstileActivityPeriod(turnstileId, startDateTime, endDateTime)
+        return ResponseEntity.ok(activity)
+    }
+
+    @GetMapping("/users/{username}/activity")
     suspend fun userTransitCountGet(
-        @RequestParam("username")
-        username: String,
+        @PathVariable("username") username: String,
         @RequestHeader("Authorization") authorizationHeader: String
-    ): ResponseEntity<UserActivityDTO?> {
-        return ResponseEntity.ok(turnstileService.getUserTransitCount(username))
+    ): ResponseEntity<Any> {
+        val activity = HashMap<String, Long>()
+        activity["count"] = turnstileService.getUserActivity(username)
+        return ResponseEntity.ok(activity)
     }
 
-    @GetMapping("/userTransitCountPeriod", produces = [MediaType.APPLICATION_NDJSON_VALUE])
+    @GetMapping("/users/{username}/activity/date")
     suspend fun userTransitCountPeriodGet(
-        @RequestParam("username")
-        username: String,
-        @RequestParam("startPeriod")
-        startPeriod: String,
-        @RequestParam("endPeriod")
-        endPeriod: String,
+        @PathVariable("username") username: String,
+        @RequestParam("start") startDate: Date,
+        @RequestParam("end") endDate: Date,
         @RequestHeader("Authorization") authorizationHeader: String
-    ): ResponseEntity<UserActivityDTO?> {
-        return ResponseEntity.ok(turnstileService.getUserTransitCountPeriod(username, LocalDateTime.parse(startPeriod, DateTimeFormatter.ISO_LOCAL_DATE_TIME), LocalDateTime.parse(endPeriod, DateTimeFormatter.ISO_LOCAL_DATE_TIME)))
+    ): ResponseEntity<Any> {
+        val startDateTime = Timestamp(startDate.time).toLocalDateTime()
+        val endDateTime = Timestamp(endDate.time).toLocalDateTime()
+        val activity = HashMap<String, Long>()
+        activity["count"] = turnstileService.getUserActivityPeriod(username, startDateTime, endDateTime)
+        return ResponseEntity.ok(activity)
     }
 
-    @GetMapping("/userTransits", produces = [MediaType.APPLICATION_NDJSON_VALUE])
-    suspend fun allUserTransitsGet(
-        @RequestParam("username")
-        username: String,
+    @GetMapping("/users/{username}/transits", produces = [MediaType.APPLICATION_NDJSON_VALUE])
+    fun allUserTransitsGet(
+        @PathVariable("username") username: String,
         @RequestHeader("Authorization") authorizationHeader: String
     ): ResponseEntity<Flow<TurnstileValidationDTO?>> {
         return ResponseEntity.ok(turnstileService.getAllUserTransits(username))

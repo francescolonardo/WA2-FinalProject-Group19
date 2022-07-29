@@ -5,15 +5,16 @@ import kotlinx.coroutines.flow.Flow
 import java.time.LocalDateTime
 
 interface TurnstileService {
-    suspend fun validateTicket(ticketQrDTO: TicketQrDTO, loggedTurnstileId: Long, authorizationHeader: String): Boolean
+    suspend fun validateTicket(loggedTurnstileId: Long, ticketQRDTO: TicketQRDTO, authorizationHeader: String): Boolean
     suspend fun getTurnstileDetails(turnstileId: Long): TurnstileDetailsDTO?
     suspend fun addTurnstileDetails(turnstileDetailsDTO: TurnstileDetailsDTO): TurnstileDetailsDTO
-    suspend fun getTurnstileValidationByTicketId(ticketId: Long): TurnstileValidationDTO?
-    suspend fun getTurnstileTransitCount(turnstileId: Long): TurnstileActivityDTO
-    suspend fun getAllTurnstilesTransitCount(): TurnstileActivityDTO
-    suspend fun getTurnstileTransitCountPeriod(turnstileId: Long, startPeriod: LocalDateTime, endPeriod: LocalDateTime): TurnstileActivityDTO
-    suspend fun getAllTurnstilesTransitCountPeriod(startPeriod: LocalDateTime, endPeriod: LocalDateTime): TurnstileActivityDTO
-    suspend fun getUserTransitCount(username: String): UserActivityDTO
-    suspend fun getUserTransitCountPeriod(username: String, startPeriod: LocalDateTime, endPeriod: LocalDateTime): UserActivityDTO
-    suspend fun getAllUserTransits(username: String): Flow<TurnstileValidationDTO?>
+    suspend fun getTurnstileValidationsByTurnstileId(turnstileId: Long): Flow<TurnstileValidationDTO>
+    suspend fun getTurnstilesValidationByTicketId(ticketId: Long): TurnstileValidationDTO?
+    suspend fun getAllTurnstilesActivity(): Long
+    suspend fun getTurnstileActivity(turnstileId: Long): Long
+    suspend fun getAllTurnstilesActivityPeriod(startDate: LocalDateTime, endDate: LocalDateTime): Long
+    suspend fun getTurnstileActivityPeriod(turnstileId: Long, startDate: LocalDateTime, endDate: LocalDateTime): Long
+    suspend fun getUserActivity(username: String): Long
+    suspend fun getUserActivityPeriod(username: String, startPeriod: LocalDateTime, endPeriod: LocalDateTime): Long
+    fun getAllUserTransits(username: String): Flow<TurnstileValidationDTO?>
 }

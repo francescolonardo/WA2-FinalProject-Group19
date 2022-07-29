@@ -15,8 +15,8 @@ class TicketServiceImpl : TicketService {
     private lateinit var ticketRepository: TicketRepository
 
     override fun getAllTickets(): Flow<TicketDTO> {
-        return ticketRepository .findAll()
-            .map { ticket: Ticket -> ticket.toDTO() }
+        return ticketRepository.findAll()
+            .map { ticket -> ticket.toDTO() }
     }
 
     override suspend fun addNewTicket(newTicketDTO: TicketDTO): TicketDTO {

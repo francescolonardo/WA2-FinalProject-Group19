@@ -48,12 +48,12 @@ class AdminController {
 
     @GetMapping("/orders/date", produces = [MediaType.APPLICATION_NDJSON_VALUE])
     suspend fun getAllOrdersByDate(
-        @RequestParam start: Date,
-        @RequestParam end: Date,
+        @RequestParam("start") startDate: Date,
+        @RequestParam("end") endDate: Date,
         @RequestHeader("Authorization") authorizationHeader: String
     ): ResponseEntity<Flow<OrderDTO>> {
-        val startTimestamp = Timestamp(start.time)
-        val endTimestamp = Timestamp(end.time)
+        val startTimestamp = Timestamp(startDate.time)
+        val endTimestamp = Timestamp(endDate.time)
         val retrievedOrders = orderService.getAllOrdersByDate(
             startTimestamp,
             endTimestamp
@@ -64,12 +64,12 @@ class AdminController {
     @GetMapping("/orders/{userId}/date", produces = [MediaType.APPLICATION_NDJSON_VALUE])
     suspend fun getUserOrdersByDate(
         @PathVariable("userId") userId: Long,
-        @RequestParam start: Date,
-        @RequestParam end: Date,
+        @RequestParam("start") startDate: Date,
+        @RequestParam("end") endDate: Date,
         @RequestHeader("Authorization") authorizationHeader: String
     ): ResponseEntity<Flow<OrderDTO>> {
-        val startTimestamp = Timestamp(start.time)
-        val endTimestamp = Timestamp(end.time)
+        val startTimestamp = Timestamp(startDate.time)
+        val endTimestamp = Timestamp(endDate.time)
         val retrievedOrders = orderService.getAllUserOrdersByDate(
             userId,
             startTimestamp,

@@ -1,6 +1,6 @@
 package it.polito.wa2.turnstileservice.controllers
 
-import it.polito.wa2.turnstileservice.dtos.TicketQrDTO
+import it.polito.wa2.turnstileservice.dtos.TicketQRDTO
 import it.polito.wa2.turnstileservice.services.TurnstileService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -16,11 +16,17 @@ class TurnstileController {
 
     @PostMapping("/validate")
     suspend fun validateTicketPost(
-        @RequestBody ticketQR: TicketQrDTO,
+        @RequestBody ticketQRDTO: TicketQRDTO,
         @RequestHeader("Authorization") authorizationHeader: String,
         loggedTurnstile: Principal
     ): ResponseEntity<Boolean> {
-        return if(!turnstileService.validateTicket(ticketQR, loggedTurnstile.name.toLong(), authorizationHeader))
+        val validationResult =
+            turnstileService.validateTicket(
+                1,// loggedTurnstile.name.toLong(), // TODO: fix this
+                ticketQRDTO,
+                authorizationHeader
+            )
+        return if (!validationResult)
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body(false)
         else
             ResponseEntity.ok(true)
