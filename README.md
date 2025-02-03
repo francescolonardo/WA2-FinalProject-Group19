@@ -1,6 +1,6 @@
-# WA2-FinalProject-Group19
+# Transport Company Web-based Information System
 
-Design and implement an web-based information system that supports a public transport company in managing the ticketing process and in granting automatic access to the vehicles.
+Web-based information system that supports a public transport company in managing the ticketing process and in granting automatic access to the vehicles.
 
 The system will support two kinds of human users, travelers and administrators, as well as a set of embedded systems controlling the turnstiles at the entrance and exit gates.
 
